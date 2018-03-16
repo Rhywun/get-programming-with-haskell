@@ -43,4 +43,27 @@ overwrite x = let x = 2 in
 -- QC0303
 overwrite' x = (\x -> (\x -> (\x -> x) 4) 3) 2
 
--- cont. p. 29
+-- Practical lambda functions and lexical scope
+
+x = 4
+
+add1 y = y + x                        -- x is bound to top-level x
+                                      -- y is bound to argument y
+
+add2 y = (\x -> y + x) 3              -- x is bound to lambda argument x
+                                      -- y is bound to argument y
+
+add3 y = (\y -> (\x -> y + x) 1) 2    -- x is bound to lambda argument x
+                                      -- y is bound to lambda argument y,
+                                      --   function argument is ignored
+
+-- Q0302
+
+counter x = let x = x + 1
+            in
+              let x = x + 1
+              in
+                x
+
+counter' x = (\x -> x + 1)
+              ((\x -> x + 1) x)

@@ -72,13 +72,13 @@ addressLetter name location = nameText ++ " - " ++ location
 
 -- San Francisco has a new address for last names beginning with "L":
 sfOffice name = if lastName < "L"
-                then nameText ++ " - PO Box 1234 - San Francisco, CA, 94111"
-                else nameText ++ " - PO Box 1010 - San Francisco, CA, 94109"
+                then nameText ++ " - PO Box 1234 - San Francisco, CA 94111"
+                else nameText ++ " - PO Box 1010 - San Francisco, CA 94109"
                 where lastName = snd name
                       nameText = fst name ++ " " ++ lastName
 
 -- New York wants the name followed by a ':' instead of a '-':
-nyOffice name = nameText ++ ": PO Box 789 - New York, NY, 10013"
+nyOffice name = nameText ++ ": PO Box 789 - New York, NY 10013"
                 where nameText = fst name ++ " " ++ snd name
 
 -- Reno only wants the last names:
@@ -97,7 +97,6 @@ getLocationFunction location = case location of
 addressLetter' name location = getLocationFunction location name
 
 -- Q0401
-
 compareLastNames'' name1 name2 | compareLastNames''' == EQ = compare firstName1 firstName2
                                | otherwise                 = compareLastNames'''
                                where lastName1           = snd name1
@@ -106,4 +105,16 @@ compareLastNames'' name1 name2 | compareLastNames''' == EQ = compare firstName1 
                                      firstName2          = fst name2
                                      compareLastNames''' = compare lastName1 lastName2
 
--- cont. p. 42
+-- Q0402
+
+dcOffice name = nameText ++ " - PO Box 333 - Washington, DC 20202"
+                where nameText = fst name ++ " " ++ snd name ++ " , Esq."
+
+getLocationFunction' location = case location of
+                                "ny"   -> nyOffice
+                                "sf"   -> sfOffice
+                                "reno" -> renoOffice
+                                "dc"   -> dcOffice
+                                _      -> \name -> fst name ++ " " ++ snd name
+
+addressLetter'' name location = getLocationFunction' location name

@@ -57,8 +57,8 @@ instance Show SixSidedDie where
 -- Type classes for more-complex types
 --
 --
-newtype Name -- was "data" but hlint suggests "newtype"
-         =
+-- was "data" but hlint suggests "newtype"
+newtype Name =
   Name (String, String)
   deriving (Show, Eq)
 
@@ -71,3 +71,16 @@ names =
 -- Sort by last name
 instance Ord Name where
   compare (Name (f1, l1)) (Name (f2, l2)) = compare (l1, f1) (l2, f2)
+
+--
+-- Q1401
+-- ? Define required functions for Ord and Eq using the functions defined on Enum?
+--
+-- Q1402
+class Integral a => Die a where
+  sides :: a
+
+data FiveSidedDie
+
+instance Die FiveSidedDie where
+  sides = 5

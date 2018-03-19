@@ -74,13 +74,30 @@ instance Ord Name where
 
 --
 -- Q1401
--- ? Define required functions for Ord and Eq using the functions defined on Enum?
+data Boo
+  = Tru
+  | Fls
+  deriving (Enum)
+
+instance Eq Boo where
+  x == y = fromEnum x == fromEnum y
+
+instance Ord Boo where
+  compare x y = compare (fromEnum x) (fromEnum y)
+
+
+
 --
 -- Q1402
 class Integral a => Die a where
   sides :: a
+  roll :: a -> a
 
-data FiveSidedDie
+newtype FiveSidedDie = D5 Int deriving Show
 
 instance Die FiveSidedDie where
   sides = 5
+
+-- PASS
+-- I'm trying to come up with a class Die that holds the number of sides so I can
+-- have subclasses that don't look like S1 | S2 | etc. etc. but I can't figure it out.

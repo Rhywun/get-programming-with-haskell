@@ -1,7 +1,5 @@
 module Lesson16 where
 
-import           Numeric
-
 --
 --
 -- Product types - combining types with “and”

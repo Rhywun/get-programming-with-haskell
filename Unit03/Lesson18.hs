@@ -148,4 +148,5 @@ boxMap f (Box x) = Box (f x)
 -- Q1802
 pairs' = zip organs ids :: [(Organ,Int)]
 catalog' = Map.fromList pairs' :: Map.Map Organ Int
--- WRONG
+-- WRONG - you need to map the organ to the COUNT of organs
+-- PASS, come back later

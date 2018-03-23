@@ -3,7 +3,9 @@
 module Lesson23 where
 
 import           Data.Semigroup
-import qualified Data.Text      as T
+import qualified Data.Text         as T
+import qualified Data.Text.Lazy    as TL
+import qualified Data.Text.Lazy.IO as TLIO
 
 firstWord :: String
 firstWord = "pessimism"
@@ -56,6 +58,16 @@ unlines' = T.intercalate "\n"
 --
 -- Q2301
 -- See hello_world.hs
-
 --
--- cont. p. 281
+-- Q2302
+-- Cheated.
+-- Q: Why is there no lazy read?
+--
+toInts :: TL.Text -> [Int]
+toInts = map (read . TL.unpack) . TL.lines
+
+main2 :: IO ()
+main2 = do
+  input <- TLIO.getContents
+  let numbers = toInts input
+  TLIO.putStrLn (TL.pack (show (sum numbers)))

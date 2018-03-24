@@ -43,41 +43,38 @@ main3 = do
       then hGetLine helloFile
       else return "no second line"
   putStrLn "done!"
-
 --
 --
 -- Simple I/O tools
 --
 -- See fileCounts.hs
-
 --
 -- QC2403
 -- Because it's more convenient to input a list rather that apply ++ between each item.
 -- Also, ++ is only defined for [Char], not Text.
 --
-
 --
 --
 --  The trouble with lazy I/O
 --
 -- See fileCounts.hs, 2nd version of `main`
-
 --
 -- QC2404
 -- Because it's lazy - the data can be read any time later in the program.
-
 --
 --
 -- Strict I/O
 --
 -- See fileCount_strict.hs
 --
-
 --
 -- Q2401
 -- See cp.hs
-
-
-
--- cont. p. 293
+--
+-- Q2402
+-- See capitalize.hs
+--
+--
 -- TODO - I'm still not clear on the difference between let= and <-
+--   ==> Use <- to assign a value of type IO a and let it behave like type a
+--       Use let= to assign a value that isn't an IO type

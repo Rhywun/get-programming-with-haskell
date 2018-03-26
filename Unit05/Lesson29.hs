@@ -1,12 +1,12 @@
 module Lesson29 where
 
 {-
-class Functor f where
-  fmap :: (a -> b) -> f a -> f b              -- or <$>
+  class Functor f where
+    fmap   :: (a -> b) -> f a -> f b              -- or <$>
 
-class Functor f => Applicative f where
-  <*> :: f (a -> b) -> f a -> f b
-  pure :: a -> f a
+  class Functor f => Applicative f where
+    <*>    :: f (a -> b) -> f a -> f b
+    pure   :: a -> f a
 -}
 --
 -- QC2901

@@ -38,13 +38,30 @@ creditsDB =
     ]
 
 -- Goal:
-creditsFromID :: GamerId -> Maybe PlayerCredits
-crediteFromID = undefined
+{-
+creditsFromId :: GamerId -> Maybe PlayerCredits
+crediteFromId = undefined
+-}
 
+-- We need to hook up these two functions:
+--
 lookupUserName :: GamerId -> Maybe UserName
 lookupUserName id = Map.lookup id userNameDB
 
 lookupCredits :: UserName -> Maybe PlayerCredits
 lookupCredits username = Map.lookup username creditsDB
 
--- cont. p. 376
+-- Wrapper:
+altLookupCredits :: Maybe UserName -> Maybe PlayerCredits
+altLookupCredits Nothing = Nothing
+altLookupCredits (Just username) = lookupCredits username
+
+creditsFromId :: GamerId -> Maybe PlayerCredits
+creditsFromId id = altLookupCredits (lookupUserName id)
+
+-- QC3001
+creditsFromIdStrange :: GamerId -> Maybe (Maybe PlayerCredits)
+creditsFromIdStrange id = pure lookupCredits <*> lookupUserName id
+-- Returns a nested Maybe
+
+-- cont. p. 377

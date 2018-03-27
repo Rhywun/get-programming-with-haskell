@@ -105,7 +105,7 @@ me = Candidate 1 A B BA
 -- IO context
 --
 readInt :: IO Int
-readInt = getLine >>= (return . read) -- or: read <$> getLine... um... OK
+readInt = getLine >>= (return . read) -- or: read <$> getLine... ... um... OK
 
 readGrade :: IO Grade
 readGrade = getLine >>= (return . read)
@@ -154,11 +154,42 @@ candidate3 = Candidate 3 A B MS
 candidateDB = Map.fromList [(1, candidate1), (2, candidate2), (3, candidate3)]
 
 assessCandidateMaybe :: Int -> Maybe String
-assessCandidateMaybe cId = do
-  candidate <- Map.lookup cId candidateDB
+assessCandidateMaybe id = do
+  candidate <- Map.lookup id candidateDB
   let passed = viable candidate
   let statement =
         if passed
           then "passed"
           else "failed"
   return statement
+
+-- QC3104
+qc4 :: Maybe String -> String
+qc4 (Just decision) = decision
+qc4 Nothing = "Error: id not found"
+
+
+--
+-- List context
+--
+candidates = [candidate1, candidate2, candidate3]
+
+assessCandidateList :: [Candidate] -> [String]
+assessCandidateList candidates = do
+  candidate <- candidates
+  let passed = viable candidate
+  let statement =
+        if passed
+          then "passed"
+          else "failed"
+  return statement
+
+-- QC3105
+-- Yes.
+
+--
+--
+-- Putting it all together and writing a monadic function
+--
+
+-- cont. p. 399

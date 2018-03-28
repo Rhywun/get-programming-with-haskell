@@ -1,5 +1,6 @@
 module Lesson33 where
 
+import           Control.Applicative
 import           Control.Monad
 
 --
@@ -42,12 +43,12 @@ students =
 -- SELECT
 --
 --
--- _select (firstName . studentName) students
---   == ["Audre","Leslie","Judith","Guy","Jean","Julia"]
--- _select' (\x -> (studentName x, gradeLevel x)) students
---   == [(Audre Lorde,Senior),(Leslie Silko,Junior),(Judith Butler,Freshman),
---       (Guy Debord,Senior),(Jean Baudrillard,Sophmore),(Julia Kristeva,Junior)]
-_select :: (a -> b) -> [a] -> [b]
+-- E.g. _select (firstName . studentName) students
+--        == ["Audre","Leslie","Judith","Guy","Jean","Julia"]
+--      _select' (\x -> (studentName x, gradeLevel x)) students
+--        == [(Audre Lorde,Senior),(Leslie Silko,Junior), ...]
+-- _select :: (a -> b) -> [a] -> [b]
+_select :: Monad m => (a -> b) -> m a -> m b
 _select f xs = do
   x <- xs
   return (f x)
@@ -60,8 +61,9 @@ _select' f xs = f <$> xs
 -- WHERE
 --
 --
--- _where (startsWith 'J' . firstName) students
-_where :: (a -> Bool) -> [a] -> [a]
+-- E.g. _where (startsWith 'J' . firstName) students
+-- _where :: (a -> Bool) -> [a] -> [a]
+_where :: (Monad m, Alternative m) => (a -> Bool) -> m a -> m a
 _where p xs = do
   x <- xs
   guard (p x)
@@ -99,11 +101,15 @@ data Course = Course
 
 courses = [Course 101 "French" 100, Course 201 "English" 200]
 
--- _join teachers courses teacherId teacher ==
---    [(Teacher {teacherId = 100, teacherName = Simone De Beauvior},Course {courseId = 101,
---      courseTitle = "French", teacher = 100}),(Teacher {teacherId = 200, teacherName =
---      Susan Sontag},Course {courseId = 201, courseTitle = "English", teacher= 200})]
-_join :: Eq c => [a] -> [b] -> (a -> c) -> (b -> c) -> [(a, b)]
+-- E.g. _join teachers courses teacherId teacher
+-- _join :: Eq c => [a] -> [b] -> (a -> c) -> (b -> c) -> [(a, b)]
+_join ::
+     (Monad m, Alternative m, Eq c)
+  => m a
+  -> m b
+  -> (a -> c)
+  -> (b -> c)
+  -> m (a, b)
 _join data1 data2 prop1 prop2 = do
   d1 <- data1
   d2 <- data2
@@ -111,4 +117,99 @@ _join data1 data2 prop1 prop2 = do
   guard (prop1 (fst dpairs) == prop2 (snd dpairs))
   return dpairs
 
--- cont. p. 419
+-- No idea what to do here to desugar:
+{-
+_join' data1 data2 prop1 prop2 =
+  data1 >>= (\d1 -> data2 >>= (\d2 -> let dpairs = (d1, d2)) >>
+    guard (prop1 (fst dpairs) == prop2 (snd dpairs)) >> return dpairs)
+-}
+--
+--
+-- Building your HINQ interface and example queries
+--
+--
+-- How to pleasantly combine these?
+--
+joinData = _join teachers courses teacherId teacher
+
+whereResult = _where ((== "English") . courseTitle . snd) joinData
+
+selectResult = _select (teacherName . fst) whereResult -- == [Susan Sontag]
+
+-- Here's one way:
+_hinq selectQuery joinQuery whereQuery = (selectQuery . whereQuery) joinQuery
+
+finalResult =
+  _hinq
+    (_select (teacherName . fst))
+    (_join teachers courses teacherId teacher)
+    (_where ((== "English") . courseTitle . snd))
+
+-- What if we don't need a WHERE clause?
+teacherFirstName = _hinq (_select firstName) finalResult (_where (const True)) -- We can do better
+
+--
+--
+-- Making a HINQ type for your queries
+--
+--
+-- First, note the change to monoidal type signatures above
+-- on _select, _where, and _join
+--
+data HINQ m a b
+  = HINQ (m a -> m b) -- _select
+         (m a) -- _join or data
+         (m a -> m a) -- _where
+  | HINQ_ (m a -> m b) -- _select
+          (m a) -- _join or data
+
+runHINQ :: (Monad m, Alternative m) => HINQ m a b -> m b
+runHINQ (HINQ sClause jClause wClause) = _hinq sClause jClause wClause
+runHINQ (HINQ_ sClause jClause) = _hinq sClause jClause (_where (const True))
+
+--
+--
+-- Running your HINQ queries
+--
+--
+-- E.g. runHINQ query1 == [Susan Sontag]
+query1 :: HINQ [] (Teacher, Course) Name
+query1 =
+  HINQ
+    (_select (teacherName . fst))
+    (_join teachers courses teacherId teacher)
+    (_where ((== "English") . courseTitle . snd))
+
+-- E.g. runHINQ query2 == [Simone De Beauvior,Susan Sontag]
+query2 :: HINQ [] Teacher Name
+query2 = HINQ_ (_select teacherName) teachers
+
+--
+-- HINQ with Maybe types
+--
+possibleTeacher :: Maybe Teacher
+possibleTeacher = Just (head teachers)
+
+possibleCourse :: Maybe Course
+possibleCourse = Just (head courses)
+
+-- E.g. runHINQ maybeQuery1 == Just Simone De Beauvior
+maybeQuery1 :: HINQ Maybe (Teacher, Course) Name
+maybeQuery1 =
+  HINQ
+    (_select (teacherName . fst))
+    (_join possibleTeacher possibleCourse teacherId teacher)
+    (_where ((== "French") . courseTitle . snd))
+
+missingCourse :: Maybe Course
+missingCourse = Nothing
+
+-- E.g. runHINQ maybeQuery2 == Nothing
+maybeQuery2 :: HINQ Maybe (Teacher, Course) Name
+maybeQuery2 =
+  HINQ
+    (_select (teacherName . fst))
+    (_join possibleTeacher missingCourse teacherId teacher)
+    (_where ((== "French") . courseTitle . snd))
+
+-- Enough!

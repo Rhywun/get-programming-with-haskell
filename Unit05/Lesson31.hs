@@ -166,8 +166,7 @@ assessCandidateMaybe id = do
 -- QC3104
 qc4 :: Maybe String -> String
 qc4 (Just decision) = decision
-qc4 Nothing = "Error: id not found"
-
+qc4 Nothing         = "Error: id not found"
 
 --
 -- List context
@@ -185,11 +184,99 @@ assessCandidateList candidates = do
   return statement
 
 -- QC3105
--- Yes.
+-- Yes, it returns the empty list.
+--
+--
+-- Putting it all together and writing a monadic (i.e. universal) function
+-- Note that `candidates` here can be one of:
+--   1. a single candidate entered interactively (IO Candidate)
+--   2. a single candidate looked up in a Map (Maybe Candidate)
+--   3. a list of candidates ([Candidate])
+--   4. (some other Monad)
+--
+assessCandidate :: Monad m => m Candidate -> m String
+assessCandidate candidates = do
+  candidate <- candidates
+  let passed = viable candidate
+  let statement =
+        if passed
+          then "passed"
+          else "failed"
+  return statement
 
 --
 --
--- Putting it all together and writing a monadic function
+-- Q3101
+-- Cheated (duh) and even fixed typo in the book
 --
+type Size = Double
 
--- cont. p. 399
+area :: Size -> Double
+area size = pi * (size / 2) ^ 2
+
+type Cost = Double
+
+type Pizza = (Size, Cost)
+
+costPerSqIn :: Pizza -> Double
+costPerSqIn (size, cost) = cost / area size
+
+cheaperPizza :: Pizza -> Pizza -> Pizza
+cheaperPizza p1 p2 =
+  case compare (costPerSqIn p1) (costPerSqIn p2) of
+    LT -> p1
+    _  -> p2
+
+describePizza :: Pizza -> String
+describePizza (size, cost) =
+  "The " ++
+  show size ++ "\" pizza is cheaper at " ++ show cpsi ++ " per sq. in."
+  where
+    cpsi = costPerSqIn (size, cost)
+
+ioMain :: IO ()
+ioMain =
+  putStrLn "What is the size of pizza 1" >> getLine >>=
+  (\size1 ->
+     putStrLn "What is the cost of pizza 1" >> getLine >>=
+     (\cost1 ->
+        putStrLn "What is the size of pizza 2" >> getLine >>=
+        (\size2 ->
+           putStrLn "What is the cost of pizza 2" >> getLine >>=
+           (\cost2 ->
+              (\pizza1 ->
+                 (\pizza2 ->
+                    (\betterPizza -> putStrLn (describePizza betterPizza))
+                      (cheaperPizza pizza1 pizza2))
+                   (read size2, read cost2))
+                (read size1, read cost1)))))
+
+--
+-- Q3102
+--
+listMain :: [String]
+listMain = do
+  size1 <- [10, 12, 17]
+  cost1 <- [12.0, 15.0, 20.0]
+  size2 <- [10, 11, 18]
+  cost2 <- [13.0, 14.0, 21.0]
+  let pizza1 = (size1, cost1)
+  let pizza2 = (size2, cost2)
+  let betterPizza = cheaperPizza pizza1 pizza2
+  return (describePizza betterPizza)
+
+--
+-- Q3103
+--
+monadMain :: Monad m => m Size -> m Cost -> m Size -> m Cost -> m String
+monadMain size1 cost1 size2 cost2 = do
+  size1' <- size1
+  cost1' <- cost1
+  size2' <- size2
+  cost2' <- cost2
+  let pizza1 = (size1', cost1')
+  let pizza2 = (size2', cost2')
+  let betterPizza = cheaperPizza pizza1 pizza2
+  return (describePizza betterPizza)
+
+q3 = monadMain [10, 12, 17] [12.0, 15.0, 20.0] [10, 11, 18] [13.0, 14.0, 21.0]

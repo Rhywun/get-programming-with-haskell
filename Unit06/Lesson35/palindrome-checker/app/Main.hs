@@ -1,9 +1,7 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main where
 
 import           Data.Text.IO as TIO (getLine, putStr, putStrLn)
-import           Lib
+import           Palindrome
 import           System.IO
 
 main :: IO ()
@@ -16,5 +14,3 @@ main = do
           then "It's a palindrome!"
           else "Not a palidrome :("
   TIO.putStrLn response
-
--- cont. p. 449

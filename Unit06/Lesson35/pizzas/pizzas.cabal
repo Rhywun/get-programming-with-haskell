@@ -1,0 +1,62 @@
+-- This file has been generated from package.yaml by hpack version 0.20.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 5af0f3c272e7013cc41015811fed763959b5984b508616946d6cdf210ec2b3e8
+
+name:           pizzas
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/Rhywun/pizzas#readme>
+homepage:       https://github.com/Rhywun/pizzas#readme
+bug-reports:    https://github.com/Rhywun/pizzas/issues
+author:         Patrick Huffer
+maintainer:     rhywun@rhywun.com
+copyright:      Patrick Huffer
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/Rhywun/pizzas
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_pizzas
+  default-language: Haskell2010
+
+executable pizzas-exe
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , pizzas
+  other-modules:
+      Paths_pizzas
+  default-language: Haskell2010
+
+test-suite pizzas-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , pizzas
+  other-modules:
+      Paths_pizzas
+  default-language: Haskell2010

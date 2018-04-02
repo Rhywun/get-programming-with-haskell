@@ -1,0 +1,68 @@
+-- This file has been generated from package.yaml by hpack version 0.20.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 389c8e726b5b647f01ef3d41ebc00483f939576b952e4fa681a662959c805405
+
+name:           json-lesson
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/Rhywun/json-lesson#readme>
+homepage:       https://github.com/Rhywun/json-lesson#readme
+bug-reports:    https://github.com/Rhywun/json-lesson/issues
+author:         Patrick Huffer
+maintainer:     rhywun@rhywun.com
+copyright:      Patrick Huffer
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/Rhywun/json-lesson
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_json_lesson
+  default-language: Haskell2010
+
+executable json-lesson-exe
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , json-lesson
+    , aeson
+    , bytestring
+    , text
+  other-modules:
+      Paths_json_lesson
+  default-language: Haskell2010
+  extensions:
+      OverloadedStrings
+    , DeriveGeneric
+
+test-suite json-lesson-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , json-lesson
+  other-modules:
+      Paths_json_lesson
+  default-language: Haskell2010

@@ -1,12 +1,26 @@
+module Lesson02 where
+
 simple x = x
+
+y = 10
+-- y = 11 <- won't compile
+
+calcChange owed given = if given - owed > 0 then given - owed else 0
+
+-- Better:
+calcChange' owed given = if change > 0 then change else 0
+  where change = given - owed
 
 -- QC0203
 
-doublePlusTwo x = doubleX + 2
-                  where doubleX = x * 2
+doublePlusTwo x = doubleX + 2 where doubleX = x * 2
+
+-- QC0204
+-- 6
 
 -- Q0201
--- Because an if without an else would not return a value if the if branch eval'ed to F
+-- Because an if without an else would not return a value if the if branch
+-- evaluated to false.
 
 -- Q0202
 

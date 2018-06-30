@@ -1,19 +1,21 @@
+import           System.IO
+
 main :: IO ()
 main = do
-  print "Who is the email for?"
+  hSetBuffering stdout NoBuffering
+  putStr "Who is the email for? "
   recipient <- getLine
-  print "What is the Title?"
+  putStr "What is the title? "
   title <- getLine
-  print "Who is the Author?"
+  putStr "Who is the author? "
   author <- getLine
-  print (createEmail recipient title author)
+  putStrLn (createEmail recipient title author)
 
 toPart recipient = "Dear " ++ recipient ++ ",\n"
 
-bodyPart bookTitle = "Thanks for buying " ++ bookTitle ++ ".\n"
+bodyPart bookTitle = "Thanks for buying \"" ++ bookTitle ++ "\".\n"
 
 fromPart author = "Thanks,\n" ++ author
 
-createEmail recipient bookTitle author = toPart recipient ++
-                                         bodyPart bookTitle ++
-                                         fromPart author
+createEmail recipient bookTitle author =
+  toPart recipient ++ bodyPart bookTitle ++ fromPart author

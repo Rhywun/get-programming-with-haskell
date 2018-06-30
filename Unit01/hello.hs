@@ -1,2 +1,3 @@
+-- hello.hs - my first Haskell file!
 main = do
-  print "Hello, Joe!"
+  print "Hello, Pat!"

@@ -11,23 +11,23 @@ calcChange owed given = if given - owed > 0 then given - owed else 0
 calcChange' owed given = if change > 0 then change else 0
   where change = given - owed
 
--- QC0203
+-- QC3
 
 doublePlusTwo x = doubleX + 2 where doubleX = x * 2
 
--- QC0204
+-- QC4
 -- 6
 
 -- Q0201
 -- Because an if without an else would not return a value if the if branch
 -- evaluated to false.
 
--- Q0202
+-- Q2
 
 inc n = n + 1
 double n = 2 * n
 square n = n * n
 
--- Q0203
+-- Q3
 
 f n = if even n then n - 2 else 3 * n + 1

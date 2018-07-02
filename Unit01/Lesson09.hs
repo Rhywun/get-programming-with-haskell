@@ -80,24 +80,39 @@ foldl' f z []       = z
 foldl' f z (x : xs) = foldl' f (f z x) xs
 
 -- QC3
--- True, because you take the tail of the list each recursion.
+-- True, because you take the tail of the list on each recursion.
 
 foldr' f z []       = z
 foldr' f z (x : xs) = f x (foldr f z xs)
 
--- Q0901
+-- foldl and foldr give different answers when f is not commutative (such as subtraction):
+
+f1 = foldl (+) 0 [1,2,3,4] == foldr (+) 0 [1,2,3,4] -- True
+f2 = foldl (-) 0 [1,2,3,4] == foldr (-) 0 [1,2,3,4] -- False
+
+-- Q1
+
+{-
+'e' `elem'` "hello" -- True
+-}
 elem' a xs = length (filter (== a) xs) > 0
 
--- Q0902
+-- Q2
+
+{-
+isPalindrome "A man a plan a calal Panama"
+-}
 isPalindrome xs = xs' == reverse xs'
   where xs' = map toUpper $ filter (/= ' ') xs
 
--- Q0903
+-- Q3
 -- Cheat!
 -- Interesting - it's divergent:
---    harmonic 10   == 2.9289682539682538
---    harmonic 100  == 5.187377517639621
---    harmonic 1000 == 7.485470860550343
+{-
+harmonic 10   -- 2.9289682539682538
+harmonic 100  -- 5.187377517639621
+harmonic 1000 -- 7.485470860550343
+-}
 harmonic n = sum (take n seriesValues)
  where
   seriesPairs  = zip (repeat 1.0) [1.0, 2.0 ..]

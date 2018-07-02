@@ -1,16 +1,16 @@
 module Lesson06 where
 
-import Data.List
+import           Data.List
 
 --
 -- Lists and lazy evaluation
 --
 
 simple x = x
-longList = [1..]
+longList = [1 ..]
 stillLongList = simple longList
 
--- QC0601
+-- QC1
 -- backwardsInfinity = reverse [1..]
 -- Compiles; but don't evaluate! SERIOUSLY, DON'T EVALUATE!!
 
@@ -18,27 +18,72 @@ stillLongList = simple longList
 -- Common functions on lists
 --
 
+ix1 = "puppies" !! 4 -- 'i'
+
+{-
+ix2 "dog" -- 'g'
+-}
+ix2 = (!! 2) -- a section
+
+cf1 = length [1 .. 20] -- 20
+
+{-
+isPalindrome "madam" -- True
+-}
 isPalindrome word = word == reverse word
 
+{-
+respond "hello"  -- "uh.. okay"
+respond "hello!" -- "wow!"
+-}
 respond phrase = if '!' `elem` phrase then "wow!" else "uh.. okay"
 
+{-
+takeLast 10 [1..100] -- [91,92,93,94,95,96,97,98,99,100]
+-}
 takeLast n xs = reverse (take n (reverse xs))
 
+{-
+ones 5 -- [1,1,1,1,1]
+-}
 ones n = take n (cycle [1])
 
-assignToGroups n = zip groups
-                   where groups = cycle [1..n]
+assignToGroups n = zip groups where groups = cycle [1 .. n]
 
-e0601 = assignToGroups 3 ["file1.txt","file2.txt","file3.txt","file4.txt",
-                          "file5.txt","file6.txt","file7.txt","file8.txt"]
+threeGroups = assignToGroups
+  3
+  [ "file1.txt"
+  , "file2.txt"
+  , "file3.txt"
+  , "file4.txt"
+  , "file5.txt"
+  , "file6.txt"
+  , "file7.txt"
+  , "file8.txt"
+  ] -- [(1,"file1.txt"),(2,"file2.txt"),(3,"file3.txt"),
+    --  (1,"file4.txt"),(2,"file5.txt"),(3,"file6.txt"), etc.]
 
--- Q0601
+-- Q1
+
+{-
+take 7 (repeat' 5) -- [5,5,5,5,5,5,5]
+-}
 repeat' x = cycle [x]
 
--- Q0602
+-- Q2
+
+{-
+subseq 2 4 "Mississippi" -- "ss"
+-}
 subseq from to xs = take (to - from) (drop from xs)
 
--- Q0603
+-- Q3
+
+{-
+inFirstHalf 'e' "hello" -- True
+inFirstHalf 'o' "hello" -- False
+-}
 inFirstHalf x xs = x `elem` xs'
-                   where xs' = take n xs
-                         n   = length xs `div` 2
+ where
+  xs' = take n xs
+  n   = length xs `div` 2

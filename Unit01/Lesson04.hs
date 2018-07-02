@@ -1,6 +1,7 @@
 module Lesson04 where
 
 import           Data.List
+import           Data.Ord
 
 --
 -- Functions as arguments
@@ -42,7 +43,6 @@ newOrder =
 
 e3 = sort newOrder -- <sorts by first name>
 
--- See Q1 for a better way to do this
 compareLastNames name1 name2 = if lastName1 > lastName2
   then GT
   else if lastName1 < lastName2 then LT else EQ
@@ -51,6 +51,11 @@ compareLastNames name1 name2 = if lastName1 > lastName2
   lastName2 = snd name2
 
 e4 = sortBy compareLastNames newOrder -- <sorts by last name>
+
+-- I can do better:
+e5 = sortBy (\(_, b) (_, b') -> compare b b') newOrder
+e6 = sortBy (comparing snd) newOrder
+e7 = sortOn snd newOrder
 
 -- QC2
 
@@ -68,6 +73,9 @@ compareLastNames' name1 name2 | lastName1 > lastName2   = GT
   firstName2 = fst name2
 
 qc2 = sortBy compareLastNames' names'
+
+-- I can do better here too:
+e8 = sortBy (\x y -> mconcat [comparing snd x y, comparing fst x y]) names' -- Nice!
 
 --
 -- Returning functions

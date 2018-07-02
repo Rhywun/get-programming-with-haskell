@@ -14,10 +14,18 @@ genIfEven f = \x -> ifEven f x
 
 ifEvenInc = genIfEven inc
 
--- QC0501
+-- QC1
 
 genIfXEven x = \f -> ifEven f x
 
+{-
+genIf4Even inc -- 5
+-}
+genIf4Even = genIfXEven 4
+
+{-
+genIf5Even inc -- 5
+-}
 genIf5Even = genIfXEven 5           -- Any f you apply this to will not be called
 
 --
@@ -35,17 +43,39 @@ exampleUrlBuilder = genHostRequestBuilder "http://example.com"
 
 genApiRequestBuilder hostBuilder apiKey = (\resource id -> hostBuilder apiKey resource id)
 
+{-
+myExampleUrlBuilder "book" "1234" -- "http://example.com/book/1234?token=1337hAsk3ll"
+-}
 myExampleUrlBuilder = genApiRequestBuilder exampleUrlBuilder "1337hAsk3ll"
 
--- QC0502
+-- QC2
+
 genApiRequestBuilder' hostBuilder resource apiKey = (\id -> hostBuilder apiKey resource id)
 
 -- Partial application: making closures simple
 
+add4 a b c d = a +b+c+d
+
+{-
+(addXto3 7) 1 2 3 -- 13
+-}
+addXto3 x = \b c d -> add4 x b c d
+
+{-
+mystery 2 3 4 -- 12
+-}
+mystery = add4 3 -- same as (addXto3 3)
+
+-- Now we don't need "generator" functions any more:
+
 exampleUrlBuilder' = getRequestURL "http://example.com"
+myExampleUrlBuilder' = exampleUrlBuilder' "1337hAsk3ll"
 
--- QC0503
+-- QC3
 
+{-
+myBuilder "1234" -- "http://example.com/book/1234?token=1337hAsk3ll"
+-}
 myBuilder = getRequestURL "http://example.com" "1337hAsk3ll" "book"
 
 --
@@ -56,6 +86,9 @@ flipBinaryArgs f = \x y -> f y x      -- same as `flip`
 
 -- QC0504
 
+{-
+subtract2 5 -- 3
+-}
 subtract2 = flip (-) 2
 
 -- Q0501
@@ -66,4 +99,7 @@ ifEvenSquare = ifEven square
 
 -- Q0502
 
+{-
+(binaryPartialApplication (+) 2) 3 -- 5
+-}
 binaryPartialApplication f x = \y -> f x y

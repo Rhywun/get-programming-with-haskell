@@ -1,14 +1,27 @@
 module Lesson11 where
 
+-- Consider this:
+
+-- Why doesn't this work?
+{-
+average' xs = sum xs / length xs
+-}
+
 --
 -- Types in Haskell
 --
---
-x :: Int
-x = 2
 
-y :: Integer
-y = 2
+x' :: Int
+x' = 2
+
+y' :: Integer
+y' = 2
+
+-- Difference between Int and Integer?
+{-
+x ^ 2000 -- 0 (exceeds upper bound of Int as required by computer architecture)
+y ^ 2000 -- 11481... (+ 598 more digits - there is no upper bound for Integer)
+-}
 
 letter :: Char
 letter = 'a'
@@ -40,67 +53,99 @@ streetAddress = (123, "Happy St.")
 --
 -- Function types
 --
---
+
+double :: Int -> Int
+double n = n * 2
+
 half :: Int -> Double
 half n = fromIntegral n / 2
 
--- QC1101
+-- QC1
+
+{-
+halve 5 -- 2
+-}
 halve :: Int -> Int
 halve n = n `div` 2
 
--- QC1102
--- E.g. printDouble 2 == "4"
+-- show
+
+{-
+show 6   -- "6"
+show 'c' -- "'c'"
+show 6.0 -- "6.0"
+-}
+
+-- QC2
+
+{-
+printDouble 2 -- "4"
+-}
 printDouble :: Int -> String
 printDouble n = show (n * 2)
 
-anotherNumber = read "6" :: Double
+-- read - usually requires a type annotation
+
+anotherNumber :: Double
+anotherNumber = read "6"
+
+-- can also put the type at the end:
+{-
+read "6" :: Int    -- 6
+read "6" :: Double -- 6.0
+-}
+
+-- multiple arguments
 
 makeAddress :: Int -> String -> String -> (Int, String, String)
 makeAddress number street town = (number, street, town)
 
--- QC1103
---
+-- QC3
+
 makeAddress' = makeAddress 123 :: String -> String -> (Int, String, String)
-
 makeAddress'' = makeAddress 123 "Main" :: String -> (Int, String, String)
-
 makeAddress''' = makeAddress 123 "Main" "Rochester" :: (Int, String, String)
 
+-- function as argument
+
 ifEven :: (Int -> Int) -> Int -> Int
-ifEven f n =
-  if even n
-    then f n
-    else n
+ifEven f n = if even n then f n else n
 
 --
 -- Type variables
 --
---
+
 simple :: a -> a
 simple x = x
 
+{-
+makeTriple "Oscar" 'D' "Grouch" -- ("Oscar",'D',"Grouch") :: (String, Char, String)
+-}
 makeTriple :: a -> b -> c -> (a, b, c)
 makeTriple x y z = (x, y, z)
 
--- QC1104
+-- QC4
 -- Because the function argument supplied to map can return a type that is different
--- from the type of its argument
+-- from the type of its argument.
+
 --
--- Q1101
+-- Summary
+--
+
+-- Q1
 -- filter :: (a -> Bool) -> [a] -> [a]
 -- map    :: (a -> b)    -> [a] -> [b]
 -- The function supplied to `filter` is required to return Bool, while the function
 -- supplied to `map` can return any type. Also, `filter` takes and returns the same type
--- of list, while `map' can return a list of different type.
---
--- Q1102
+-- of list, while `map' can return a list of any type.
+
+-- Q2
 -- head :: [a] -> a
 -- tail :: [a] -> [a]
 -- No, because `head` doesn't return a list.
---
--- Q1103
+
+-- Q3
+
 myFoldl :: (a -> b -> a) -> a -> [b] -> a
-myFoldl f init [] = init
-myFoldl f init (x:xs) = myFoldl f newInit xs
-  where
-    newInit = f init x
+myFoldl f init []       = init
+myFoldl f init (x : xs) = myFoldl f newInit xs where newInit = f init x

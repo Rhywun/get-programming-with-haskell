@@ -7,50 +7,65 @@ module Lesson10 where
 cup oz = \message -> message oz
 
 coffeeCup = cup 12
+
+{-
+getOz coffeeCup -- 12
+-}
 getOz aCup = aCup (\oz -> oz)
 
-drink aCup ozDrank = if ozDiff >= 0
-                     then cup (oz - ozDrank)
-                     else cup 0
- where oz = getOz aCup
-       ozDiff = oz - ozDrank
+drink aCup ozDrank = if ozDiff >= 0 then cup ozDiff else cup 0
+ where
+  oz     = getOz aCup
+  ozDiff = oz - ozDrank
+
+{-
+getOz afterASip -- 11
+-}
+afterASip = drink coffeeCup 1
+
+{-
+getOz afterBigGulp -- 0
+-}
+afterBigGulp = drink coffeeCup 20
 
 isEmpty aCup = getOz aCup == 0
 
-afterManySips = foldl drink coffeeCup [1,1,1,1,1]
+{-
+getOz afterManySips -- 7
+-}
+afterManySips = foldl drink coffeeCup [1, 1, 1, 1, 1]
 
 --
 -- A more complex object: let’s build fighting robots!
 --
 
-robot (name,attack,hp)  = \message -> message (name,attack,hp)
+robot (name, attack, hp) = \message -> message (name, attack, hp)
 
-killerRobot = robot ("Kill3r",25,200)
-name (n,_,_) = n
-attack (_,a,_) = a
-hp (_,_,hp) = hp
+killerRobot = robot ("Kill3r", 25, 200)
+name (n, _, _) = n
+attack (_, a, _) = a
+hp (_, _, hp) = hp
 
 getName aRobot = aRobot name
 getAttack aRobot = aRobot attack
 getHP aRobot = aRobot hp
 
-setName aRobot newName = aRobot (\(n,a,h) -> robot (newName,a,h))
-setAttack aRobot newAttack = aRobot (\(n,a,h) -> robot (n,newAttack,h))
-setHP aRobot newHP = aRobot (\(n,a,h) -> robot (n,a,newHP))
+setName aRobot newName = aRobot (\(n, a, h) -> robot (newName, a, h))
+setAttack aRobot newAttack = aRobot (\(n, a, h) -> robot (n, newAttack, h))
+setHP aRobot newHP = aRobot (\(n, a, h) -> robot (n, a, newHP))
 
 nicerRobot = setName killerRobot "kitty"
 gentlerRobot = setAttack killerRobot 5
 softerRobot = setHP killerRobot 50
 
-printRobot aRobot = aRobot (\(n,a,h) -> n ++ " attack:" ++ show a ++ " hp:" ++ show h)
+printRobot aRobot =
+  aRobot (\(n, a, h) -> n ++ " attack:" ++ show a ++ " hp:" ++ show h)
 
-damage aRobot attackDamage = aRobot (\(n,a,h) ->
-                                      robot (n,a,h-attackDamage))
+damage aRobot attackDamage =
+  aRobot (\(n, a, h) -> robot (n, a, h - attackDamage))
 
 fight aRobot defender = damage defender attack
-                        where attack = if getHP aRobot > 10
-                                       then getAttack aRobot
-                                       else 0
+  where attack = if getHP aRobot > 10 then getAttack aRobot else 0
 
 gentleGiant = robot ("Mr. Friendly", 10, 300)
 
@@ -66,7 +81,7 @@ killerRobotRound3 = fight gentleGiantRound2 killerRobotRound2
 --
 
 fastRobot = robot ("speedy", 15, 40)
-slowRobot = robot ("slowpoke",20,30)
+slowRobot = robot ("slowpoke", 20, 30)
 
 fastRobotRound3 = fight slowRobotRound3 fastRobotRound2
 fastRobotRound2 = fight slowRobotRound2 fastRobotRound1

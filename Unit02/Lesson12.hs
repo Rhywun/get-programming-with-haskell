@@ -53,13 +53,33 @@ sexInitial :: Sex -> Char
 sexInitial Male   = 'M'
 sexInitial Female = 'F'
 
-data RhType = Pos | Neg deriving (Show)
+data RhType = Pos | Neg
+
+instance Show RhType where
+  show Pos = "+"
+  show Neg = "-"
 
 data ABOType = A | B | AB | O deriving (Show)
 
-data BloodType = BloodType ABOType RhType deriving (Show)
+data BloodType = BloodType ABOType RhType
+
+instance Show BloodType where
+  show (BloodType aboType rhType) = show aboType ++ show rhType
+
+bt1 :: BloodType
+bt1 = BloodType A Pos -- A+
+
+bt2 :: BloodType
+bt2 = BloodType O Neg -- O-
+
+bt3 :: BloodType
+bt3 = BloodType AB Pos -- AB+
 
 -- Can the first blood type donate to the second?
+{-
+canDonateTo' bt1 bt2 -- False
+canDonateTo' bt2 bt1 -- True
+-}
 canDonateTo' :: BloodType -> BloodType -> Bool
 canDonateTo' (BloodType O _) _                = True
 canDonateTo' _               (BloodType AB _) = True
@@ -69,12 +89,7 @@ canDonateTo' _               _                = False
 
 type MiddleName = String
 
-data Name
-  = Name FirstName
-         LastName
-  | NameWithMiddle FirstName
-                   MiddleName
-                   LastName
+data Name = Name FirstName LastName | NameWithMiddle FirstName  MiddleName LastName
 
 -- Jumping ahead...
 instance Show Name where

@@ -1,5 +1,11 @@
 module Lesson12 where
 
+-- Consider this
+
+-- Is there a better way to express this?
+anAlbum :: (String, String, Int, [String])
+anAlbum = ("New Order", "Movement", 1981, ["Dreams Never End", "Truth", "Senses", "etc"])
+
 --
 -- Using type synonyms
 --
@@ -21,11 +27,16 @@ patientInfo fname lname age height = name ++ " " ++ ageHeight
 type PatientName = (FirstName, LastName)
 
 firstName :: PatientName -> FirstName
-firstName patient = fst patient
+firstName = fst
+
+lastName :: PatientName -> LastName
+lastName = snd
 
 -- QC1
 
--- E.g. patientInfo' ("John", "Doe") 42 200 == "Doe, John (42yrs. 200in.)"
+{-
+patientInfo' ("John", "Doe") 42 200 -- "Doe, John (42yrs. 200in.)"
+-}
 patientInfo' :: PatientName -> Age -> Height -> String
 patientInfo' (fname, lname) age height = name ++ " " ++ ageHeight
  where
@@ -36,31 +47,17 @@ patientInfo' (fname, lname) age height = name ++ " " ++ ageHeight
 -- Creating new types
 --
 
-data Sex
-  = Male
-  | Female
-  deriving (Show)
+data Sex = Male | Female deriving (Show)
 
 sexInitial :: Sex -> Char
 sexInitial Male   = 'M'
 sexInitial Female = 'F'
 
-data RhType
-  = Pos
-  | Neg
-  deriving (Show)
+data RhType = Pos | Neg deriving (Show)
 
-data ABOType
-  = A
-  | B
-  | AB
-  | O
-  deriving (Show)
+data ABOType = A | B | AB | O deriving (Show)
 
-data BloodType =
-  BloodType ABOType
-            RhType
-  deriving (Show)
+data BloodType = BloodType ABOType RhType deriving (Show)
 
 -- Can the first blood type donate to the second?
 canDonateTo' :: BloodType -> BloodType -> Bool
@@ -84,8 +81,10 @@ instance Show Name where
   show (Name f l)             = f ++ " " ++ l
   show (NameWithMiddle f m l) = f ++ " " ++ m ++ " " ++ l
 
+name1 :: Name
 name1 = Name "Jerome" "Salinger"
 
+name2 :: Name
 name2 = NameWithMiddle "Jerome" "David" "Salinger"
 
 --
@@ -103,50 +102,50 @@ data PatientV1 =
             BloodType
   deriving (Show)
 
+johnDoe :: PatientV1
 johnDoe = PatientV1 (Name "John" "Doe") Male 30 74 200 (BloodType AB Pos)
 
 -- QC2
 
-janeSmith = PatientV1 (NameWithMiddle "Jane" "Elizabeth" "Smith")
-                      Female
-                      25
-                      55
-                      130
-                      (BloodType O Neg)
+janeSmith :: PatientV1
+janeSmith =
+  PatientV1 (NameWithMiddle "Jane" "Elizabeth" "Smith") Female 25 55 130 (BloodType O Neg)
 
 -- Let's use a record type instead
 
 data Patient = Patient
-  { name      :: Name
-  , sex       :: Sex
-  , age       :: Age -- in years
-  , height    :: Height -- in inches
-  , weight    :: Weight -- in pounds
-  , bloodType :: BloodType
+  { patientName      :: Name
+  , patientSex       :: Sex
+  , patientAge       :: Age -- in years
+  , patientHeight    :: Height -- in inches
+  , patientWeight    :: Weight -- in pounds
+  , patientBloodType :: BloodType
   }
 
 jackieSmith :: Patient
 jackieSmith = Patient
-  { name      = Name "Jackie" "Smith"
-  , age       = 43
-  , sex       = Female
-  , height    = 62
-  , weight    = 115
-  , bloodType = BloodType O Neg
+  { patientName      = Name "Jackie" "Smith"
+  , patientAge       = 43
+  , patientSex       = Female
+  , patientHeight    = 62
+  , patientWeight    = 115
+  , patientBloodType = BloodType O Neg
   }
 
 -- QC3
 
-qc3 = name jackieSmith
+qc3 :: Name
+qc3 = patientName jackieSmith
 
 -- Record update:
-jackieSmithUpdated = jackieSmith { age = 44 }
+jackieSmithUpdated :: Patient
+jackieSmithUpdated = jackieSmith { patientAge = 44 }
 
 -- Q1
 
 -- E.g. canDonateTo jackieSmith jackieSmithUpdated == True
 canDonateTo :: Patient -> Patient -> Bool
-canDonateTo p1 p2 = canDonateTo' (bloodType p1) (bloodType p2)
+canDonateTo p1 p2 = canDonateTo' (patientBloodType p1) (patientBloodType p2)
 
 -- Q2
 
@@ -163,15 +162,15 @@ patientSummary :: Patient -> String
 patientSummary p =
   "**************"
     ++ "\nPatient Name: "
-    ++ show (name p)
+    ++ show (patientName p)
     ++ "\nSex: "
-    ++ show (sex p)
+    ++ show (patientSex p)
     ++ "\nAge: "
-    ++ show (age p)
+    ++ show (patientAge p)
     ++ "\nHeight: "
-    ++ show (height p)
+    ++ show (patientHeight p)
     ++ "\nWeight: "
-    ++ show (weight p)
+    ++ show (patientWeight p)
     ++ "\nBlood Type: "
-    ++ show (bloodType p)
+    ++ show (patientBloodType p)
     ++ "\n**************"

@@ -55,6 +55,7 @@ sexInitial Female = 'F'
 
 data RhType = Pos | Neg
 
+-- jumping ahead...
 instance Show RhType where
   show Pos = "+"
   show Neg = "-"
@@ -63,6 +64,7 @@ data ABOType = A | B | AB | O deriving (Show)
 
 data BloodType = BloodType ABOType RhType
 
+-- jumping ahead...
 instance Show BloodType where
   show (BloodType aboType rhType) = show aboType ++ show rhType
 
@@ -89,9 +91,9 @@ canDonateTo' _               _                = False
 
 type MiddleName = String
 
-data Name = Name FirstName LastName | NameWithMiddle FirstName  MiddleName LastName
+data Name = Name FirstName LastName | NameWithMiddle FirstName MiddleName LastName
 
--- Jumping ahead...
+-- jumping ahead...
 instance Show Name where
   show (Name f l)             = f ++ " " ++ l
   show (NameWithMiddle f m l) = f ++ " " ++ m ++ " " ++ l
@@ -122,8 +124,8 @@ johnDoe = PatientV1 (Name "John" "Doe") Male 30 74 200 (BloodType AB Pos)
 
 -- QC2
 
-janeSmith :: PatientV1
-janeSmith =
+janeESmith :: PatientV1
+janeESmith =
   PatientV1 (NameWithMiddle "Jane" "Elizabeth" "Smith") Female 25 55 130 (BloodType O Neg)
 
 -- Let's use a record type instead
@@ -137,6 +139,7 @@ data Patient = Patient
   , patientBloodType :: BloodType
   }
 
+-- the order of the fields doesn't matter:
 jackieSmith :: Patient
 jackieSmith = Patient
   { patientName      = Name "Jackie" "Smith"
@@ -146,6 +149,12 @@ jackieSmith = Patient
   , patientWeight    = 115
   , patientBloodType = BloodType O Neg
   }
+
+-- free getters:
+{-
+patientHeight jackieSmith    -- 62
+patientBloodType jackieSmith -- O-
+-}
 
 -- QC3
 
@@ -158,21 +167,25 @@ jackieSmithUpdated = jackieSmith { patientAge = 44 }
 
 -- Q1
 
--- E.g. canDonateTo jackieSmith jackieSmithUpdated == True
+{-
+canDonateTo jackieSmith jackieSmithUpdated -- True
+-}
 canDonateTo :: Patient -> Patient -> Bool
 canDonateTo p1 p2 = canDonateTo' (patientBloodType p1) (patientBloodType p2)
 
 -- Q2
 
--- E.g. putStrLn $ patientSummary jackieSmith -->
--- **************
--- Patient Name: Jackie Smith
--- Sex: Female
--- Age: 43
--- Height: 62
--- Weight: 115
--- Blood Type: BloodType O Neg
--- **************
+{-
+putStrLn $ patientSummary jackieSmith -->
+**************
+Patient Name: Jackie Smith
+Sex: Female
+Age: 43
+Height: 62
+Weight: 115
+Blood Type: O-
+**************
+-}
 patientSummary :: Patient -> String
 patientSummary p =
   "**************"

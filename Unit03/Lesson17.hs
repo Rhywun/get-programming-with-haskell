@@ -1,42 +1,68 @@
 module Lesson17 where
 
 import           Data.List
-import           Data.Semigroup
+import           Data.Semigroup                 ( Semigroup
+                                                , (<>)
+                                                )
 
---
+-- Consider this
+
+-- Can we do better?
+ct1 :: String
+ct1 = "this" ++ " " ++ "is" ++ " " ++ "a" ++ " " ++ "bit" ++ " " ++ "much"
+
 --
 -- Intro to composability - combining functions
 --
---
+
+{-
+last' [1, 2, 3] -- 3
+-}
 last' :: [a] -> a
 last' = head . reverse
 
+{-
+minimum' "electric" -- 'c'
+-}
 minimum' :: Ord a => [a] -> a
 minimum' = head . sort
 
+{-
+maximum' "electric" -- 't'
+-}
 maximum' :: Ord a => [a] -> a
 maximum' = last' . sort
 
+{-
+all' (> 2) [3, 4, 5] -- True
+all' (> 2) [2, 3, 4] -- False
+-}
 all' :: (a -> Bool) -> [a] -> Bool
-all' p = and . map p -- `and` returns whether all Bools are True
+all' p = and . map p -- `and` returns whether all of a list of Bools are True
 
--- QC1701
+-- QC1
+
+{-
+any' (< 3) [2, 4, 6] -- True
+-}
 any' :: (a -> Bool) -> [a] -> Bool
-any' p = or . map p -- `or` returns whether any of the Bools is True
+any' p = or . map p -- `or` returns whether any of a list of Bools is True
 
---
 --
 -- Combining like types: Semigroups
 --
---
+
+{-
+2 <> 3 -- 5
+-}
 instance Semigroup Integer where
   (<>) x y = x + y
 
---
--- QC1702
+-- QC2
 -- No, because division can return a Double.
+
 --
---
+
 data Color
   = Red
   | Yellow
@@ -48,15 +74,18 @@ data Color
   | Transparent
   deriving (Show, Eq)
 
---
 -- Guards
---
-howMuch :: Int -> String
-howMuch n
-  | n > 10 = "a whole bunch"
-  | n > 0 = "not much"
-  | otherwise = "we're in debt!"
 
+howMuch :: Int -> String
+howMuch n | n > 10    = "a whole bunch"
+          | n > 0     = "not much"
+          | otherwise = "we're in debt!"
+
+{-
+Red <> Yellow   -- Orange
+Red <> Blue     -- Purple
+Green <> Purple -- Brown
+-}
 instance Semigroup Color where
   Transparent <> c = c
   c <> Transparent = c
@@ -66,31 +95,31 @@ instance Semigroup Color where
   Blue <> Yellow = Green
   Yellow <> Red = Orange
   Red <> Yellow = Orange
-  a <> b
-    | a == b = a
-    | all (`elem` [Red, Blue, Purple]) [a, b] = Purple
-    | all (`elem` [Blue, Yellow, Green]) [a, b] = Green
-    | all (`elem` [Red, Yellow, Orange]) [a, b] = Orange
-    | otherwise = Brown
+  a <> b | a == b = a
+         | all (`elem` [Red, Blue, Purple]) [a, b]   = Purple
+         | all (`elem` [Blue, Yellow, Green]) [a, b] = Green
+         | all (`elem` [Red, Yellow, Orange]) [a, b] = Orange
+         | otherwise = Brown
 
---
--- QC1703
+-- QC3
 -- Yes, because addition is associative.
---
+
 -- Semigroup law
 {-
+Associativity:
 x <> (y <> z) == (x <> y) <> z
 -}
+
 --
 -- Composing with identity: Monoids
 --
---
+
 -- Conceptually:
 {-
 class Semigroup a => Monoid a where
   identity :: a
 -}
---
+
 -- Actually:
 {-
 class Monoid a where
@@ -98,21 +127,22 @@ class Monoid a where
   mappend :: a -> a -> a
   mconcat :: [a] -> a
 -}
---
+
 -- These are equivalent:
+
 eg1 = [1, 2, 3] ++ []
 
 eg2 = [1, 2, 3] <> []
 
 eg3 = [1, 2, 3] `mappend` mempty
 
---
--- QC1704
+
+-- QC4
 -- 1
---
+
 -- mconcat = foldr mappend mempty
 -- mconcat ["a","b","cde"] == "abcde"
---
+
 -- Monoid laws
 {-
 mappend mempty x == x
@@ -120,9 +150,9 @@ mappend x mempty == x
 mappend x (mappend y z) == mappend (mappend x y) z
 mconcat == foldr mappend mempty
 -}
---
+
 -- Practical Monoids - building probability tables
---
+
 type Events = [String]
 
 type Probs = [Double]
@@ -135,9 +165,9 @@ data PTable =
 -- all the probabilities by the sum of the probabilities
 createPTable :: Events -> Probs -> PTable
 createPTable events probs = PTable events normalizedProbs
-  where
-    totalProbs = sum probs
-    normalizedProbs = map (/ totalProbs) probs
+ where
+  totalProbs      = sum probs
+  normalizedProbs = map (/ totalProbs) probs
 
 -- Print a single table row
 showPair :: String -> Double -> String
@@ -154,11 +184,11 @@ instance Show PTable where
 --      cartesianCombine (*) [2,3,4] [5,6] == [10,12,15,18,20,24]
 cartesianCombine :: (a -> b -> c) -> [a] -> [b] -> [c]
 cartesianCombine f l1 l2 = zipWith f newL1 cycledL2
-  where
-    nToAdd = length l2
-    repeatedL1 = map (replicate nToAdd) l1
-    newL1 = mconcat repeatedL1
-    cycledL2 = cycle l2
+ where
+  nToAdd     = length l2
+  repeatedL1 = map (replicate nToAdd) l1
+  newL1      = mconcat repeatedL1
+  cycledL2   = cycle l2
 
 combineEvents :: Events -> Events -> Events
 combineEvents = cartesianCombine (\x y -> mconcat [x, "-", y])
@@ -178,14 +208,14 @@ instance Monoid PTable where
   mempty = PTable [] []
   mappend = (<>)
 
---
 -- Example PTables
---
+
 coin = createPTable ["heads", "tails"] [0.5, 0.5]
 
 spinner = createPTable ["red", "blue", "green"] [0.1, 0.2, 0.7]
 
 --
+
 -- The <> operator gives us the probability of each possible combo:
 {-
 coin <> spinner ==
@@ -196,7 +226,7 @@ coin <> spinner ==
   tails-blue|0.1
   tails-green|0.35
 -}
---
+
 -- Probability of flipping heads three times in a row:
 {-
 mconcat [coin,coin,coin] ==
@@ -209,12 +239,12 @@ mconcat [coin,coin,coin] ==
   tails-tails-heads|0.125
   tails-tails-tails|0.125
 -}
---
---
--- Q1701
+
+-- Q1
+
 instance Monoid Color where
   mempty = Transparent
   mappend = (<>)
---
--- Q1702
+
+-- Q2
 -- See Lesson17_Q2.hs

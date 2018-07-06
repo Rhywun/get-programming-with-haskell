@@ -15,10 +15,11 @@ data PTable =
 -- Create a probability table, ensuring all probabilities sum to 1 by dividing
 -- all the probabilities by the sum of the probabilities
 createPTable :: Events -> Probs -> PTable
-createPTable (Events events) (Probs probs) = PTable (Events events) (Probs normalizedProbs)
-  where
-    totalProbs = sum probs
-    normalizedProbs = map (/ totalProbs) probs
+createPTable (Events events) (Probs probs) = PTable (Events events)
+                                                    (Probs normalizedProbs)
+ where
+  totalProbs      = sum probs
+  normalizedProbs = map (/ totalProbs) probs
 
 -- Print a single table row
 showPair :: String -> Double -> String
@@ -35,14 +36,15 @@ instance Show PTable where
 --      cartesianCombine (*) [2,3,4] [5,6] == [10,12,15,18,20,24]
 cartesianCombine :: (a -> b -> c) -> [a] -> [b] -> [c]
 cartesianCombine f l1 l2 = zipWith f newL1 cycledL2
-  where
-    nToAdd = length l2
-    repeatedL1 = map (replicate nToAdd) l1
-    newL1 = mconcat repeatedL1
-    cycledL2 = cycle l2
+ where
+  nToAdd     = length l2
+  repeatedL1 = map (replicate nToAdd) l1
+  newL1      = mconcat repeatedL1
+  cycledL2   = cycle l2
 
 combineEvents :: Events -> Events -> Events
-combineEvents (Events e1) (Events e2) = Events (cartesianCombine (\x y -> mconcat [x, "-", y]) e1 e2)
+combineEvents (Events e1) (Events e2) =
+  Events (cartesianCombine (\x y -> mconcat [x, "-", y]) e1 e2)
 
 instance Semigroup Events where
   (<>) = combineEvents

@@ -130,18 +130,22 @@ class Monoid a where
 
 -- These are equivalent:
 
+eg1 :: [Int]
 eg1 = [1, 2, 3] ++ []
 
+eg2 :: [Int]
 eg2 = [1, 2, 3] <> []
 
+eg3 :: [Int]
 eg3 = [1, 2, 3] `mappend` mempty
-
 
 -- QC4
 -- 1
 
 -- mconcat = foldr mappend mempty
--- mconcat ["a","b","cde"] == "abcde"
+{-
+mconcat ["a","b","cde"] -- "abcde"
+-}
 
 -- Monoid laws
 {-
@@ -157,31 +161,31 @@ type Events = [String]
 
 type Probs = [Double]
 
-data PTable =
-  PTable Events
-         Probs
+data PTable = PTable Events Probs
 
 -- Create a probability table, ensuring all probabilities sum to 1 by dividing
 -- all the probabilities by the sum of the probabilities
+{-
+createPTable ["heads", "tails"] [0.5, 0.5] -- heads|0.5
+                                              tails|0.5
+-}
 createPTable :: Events -> Probs -> PTable
 createPTable events probs = PTable events normalizedProbs
  where
   totalProbs      = sum probs
   normalizedProbs = map (/ totalProbs) probs
 
--- Print a single table row
-showPair :: String -> Double -> String
-showPair event prob = mconcat [event, "|", show prob, "\n"]
-
 instance Show PTable where
   show (PTable events probs) = mconcat pairs
-    where
-      pairs = zipWith showPair events probs
+    where pairs               = zipWith showPair events probs
+          showPair event prob = mconcat [event, "|", show prob, "\n"]
 
 -- Generate all combinations of two lists using the specified function `f`
--- E.g. cartesianCombine (\x y -> mconcat [x, "-", y]) ["red", "blue"] ["red", "blue"]
---        == ["red-red","red-blue","blue-red","blue-blue"]
---      cartesianCombine (*) [2,3,4] [5,6] == [10,12,15,18,20,24]
+{-
+cartesianCombine (\x y -> mconcat [x, "-", y]) ["red", "blue"] ["red", "blue"]
+  -- ["red-red","red-blue","blue-red","blue-blue"]
+cartesianCombine (*) [2,3,4] [5,6] == [10,12,15,18,20,24]
+-}
 cartesianCombine :: (a -> b -> c) -> [a] -> [b] -> [c]
 cartesianCombine f l1 l2 = zipWith f newL1 cycledL2
  where
@@ -210,8 +214,10 @@ instance Monoid PTable where
 
 -- Example PTables
 
+coin :: PTable
 coin = createPTable ["heads", "tails"] [0.5, 0.5]
 
+spinner :: PTable
 spinner = createPTable ["red", "blue", "green"] [0.1, 0.2, 0.7]
 
 --

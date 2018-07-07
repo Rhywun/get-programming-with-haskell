@@ -107,7 +107,7 @@ itemInventory = [itemCount1, itemCount2, itemCount3]
 
 -- Data.Map
 
-data Organ = Heart | Brain | Kidney | Spleen deriving (Show, Eq, Ord)
+data Organ = Heart | Brain | Kidney | Spleen deriving (Show, Eq, Ord, Enum)
 
 organs :: [Organ]
 organs = [Heart, Heart, Brain, Spleen, Spleen, Kidney]
@@ -115,30 +115,47 @@ organs = [Heart, Heart, Brain, Spleen, Spleen, Kidney]
 ids :: [Int]
 ids = [2, 7, 13, 14, 21, 24]
 
--- pairs == [(2,Heart),(7,Heart),(13,Brain),(14,Spleen),(21,Spleen),(24,Kidney)]
 pairs :: [(Int, Organ)]
 pairs = zip ids organs
+  -- [(2,Heart),(7,Heart),(13,Brain),(14,Spleen),(21,Spleen),(24,Kidney)]
 
--- catalog ==
---   fromList [(2,Heart),(7,Heart),(13,Brain),(14,Spleen),(21,Spleen),(24,Kidney)]
 catalog :: Map.Map Int Organ
 catalog = Map.fromList pairs
+  -- fromList [(2,Heart),(7,Heart),(13,Brain),(14,Spleen),(21,Spleen),(24,Kidney)]
 
--- Map.lookup 7 catalog == Just Heart
+{-
+Map.lookup 7 catalog -- Just Heart
+-}
 
 -- Q1
 
--- E.g. tripleMap (+1) aPoint == Triple 1.1 54.2 13.3
+{-
+tripleMap (+1) aPoint -- Triple 1.1 54.2 13.3
+-}
 tripleMap :: (a -> b) -> Triple a -> Triple b
 tripleMap f (Triple x y z) = Triple (f x) (f y) (f z)
 
--- E.g. boxMap (*2) (Box 4) == Box 8
+{-
+boxMap (*2) (Box 4) -- Box 8
+-}
 boxMap :: (a -> b) -> Box a -> Box b
 boxMap f (Box x) = Box (f x)
 
 -- Q2
+-- Cheat
 
-pairs' = zip organs ids :: [(Organ, Int)]
-catalog' = Map.fromList pairs' :: Map.Map Organ Int
--- WRONG - you need to map the organ to the COUNT of organs
--- PASS, come back later
+values :: [Organ]
+values = map snd (Map.toList catalog) -- [Heart,Heart,Brain,Spleen,Spleen,Kidney]
+
+allOrgans :: [Organ]
+allOrgans = [Heart .. Spleen] -- [Heart,Brain,Kidney,Spleen]
+
+-- Walk through the list of possible organs and count the number of
+-- matches of each in our catalog
+organCounts :: [Int]
+organCounts = map countOrgan allOrgans
+  where countOrgan organ = (length . filter (== organ)) values -- [2,1,1,2]
+
+organInventory :: Map.Map Organ Int
+organInventory = Map.fromList (zip allOrgans organCounts)
+  -- fromList [(Heart,2),(Brain,1),(Kidney,1),(Spleen,2)]

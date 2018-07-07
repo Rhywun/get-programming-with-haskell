@@ -237,3 +237,31 @@ diffTS (TS times values) = TS times (Nothing : diffValues)
 
 -- moving average: a method of smoothing
 
+-- Calculate the mean of a list of Maybe a
+{-
+meanMaybe [Just 1, Just 2, Just 3]  -- Just 2.0
+meanMaybe [Just 1, Just 2, Nothing] -- Nothing
+-}
+meanMaybe :: (Real a) => [Maybe a] -> Maybe Double
+meanMaybe vals = if Nothing `elem` vals then Nothing else Just avg
+  where avg = mean (map fromJust vals)
+
+movingAvg :: (Real a) => [Maybe a] -> Int -> [Maybe Double]
+movingAvg []   _ = []
+movingAvg vals n = if length nextVals == n
+  then meanMaybe nextVals : movingAvg restVals n
+  else []
+ where
+  nextVals = take n vals
+  restVals = tail vals
+
+{-
+movingAverageTS tsAll 4
+-}
+movingAverageTS :: (Real a) => TS a -> Int -> TS Double
+movingAverageTS (TS []    []    ) _ = TS [] []
+movingAverageTS (TS times values) n = TS times smoothedValues
+ where
+  ma             = movingAvg values n
+  nothings       = replicate (n `div` 2) Nothing
+  smoothedValues = mconcat [nothings, ma, nothings]

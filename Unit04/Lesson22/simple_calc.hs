@@ -1,14 +1,20 @@
 import           Data.List.Split
 
--- E.g. isPlus "1 + 2" == True
+{-
+isPlus "1 + 2" -- True
+-}
 isPlus :: String -> Bool
 isPlus = elem '+'
 
--- E.g. isMult "1 + 2" == False
+{-
+isMult "1 + 2" -- False
+-}
 isMult :: String -> Bool
 isMult = elem '*'
 
--- E.q. splitEquation "1 + 2" == (1, 2)
+{-
+splitEquation "1 + 2" -- (1, 2)
+-}
 splitEquation :: String -> (Int, Int)
 splitEquation eq
   | isPlus eq = (read (head sp), read (last sp))
@@ -17,8 +23,10 @@ splitEquation eq
     sp = splitOn "+" eq
     sm = splitOn "*" eq
 
--- E.g. evalEquation "12 + 34" == 46
---      evalEquation "56 * 78" == 4368
+{-
+evalEquation "12 + 34" -- 46
+evalEquation "56 * 78" -- 4368
+-}
 evalEquation :: String -> Int
 evalEquation eq
   | isPlus eq = l + r
@@ -36,11 +44,7 @@ main = do
 
 --
 -- POST MORTEM
--- This sort of works, but there's some garbage in the output that's displayed
--- to the screen.
--- E.g.:
-{-
-1+2
-[34*7
-,28]D
--}
+-- My solution prints the results after all equations are input
+--
+-- Perhaps we were supposed to use the non-lazy technique here?
+--

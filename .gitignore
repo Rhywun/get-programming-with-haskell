@@ -21,3 +21,10 @@ cabal.project.local
 
 # Windows
 *.exe
+
+Unit04/Lesson22/QC3
+Unit04/Lesson22/QC4
+Unit04/Lesson22/sum
+Unit04/Lesson22/sum_lazy
+Unit04/Lesson22/quotes
+Unit04/Lesson22/simple_calc

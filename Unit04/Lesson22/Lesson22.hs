@@ -1,36 +1,35 @@
 module Lesson22 where
 
 --
--- QC2201
+-- Interacting with the command line the nonlazy way
+-- see sum.hs
+--
+
+-- QC1
+
 main1 :: IO ()
 main1 = do
-  vals <- mapM (\_ -> getLine) [1 .. 3]
+  vals <- mapM (const getLine) [1 .. 3]
   mapM_ putStrLn vals
 
---
--- QC2202
+-- QC2
+
 replicateM' :: (Monad m, Num a, Enum a) => a -> m b -> m [b]
-replicateM' n f = mapM (\_ -> f) [1 .. n]
+replicateM' n f = mapM (const f) [1 .. n]
 
 --
--- QC2203
-main3 :: IO ()
-main3 = do
-  userInput <- getContents
-  let output = reverse userInput
-  putStrLn output
-
+-- Interacting with lazy I/O
+-- see sum_lazy.hs
 --
--- QC2204
---
-toInts :: String -> [Int]
-toInts = map read . lines
 
-compute :: [Int] -> Int
-compute ns = sum $ map (^2) ns
+-- QC3
+-- see QC3.hs
 
-main4 :: IO ()
-main4 = do
-  input <- getContents
-  let numbers = toInts input
-  print (compute numbers)
+-- QC4
+-- see QC4.hs
+
+-- Q1
+-- see simple_calc.hs
+
+-- Q2
+-- see quotes.hs

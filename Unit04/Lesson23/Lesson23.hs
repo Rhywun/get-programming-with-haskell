@@ -2,43 +2,45 @@
 
 module Lesson23 where
 
-import           Data.Semigroup
-import qualified Data.Text         as T
-import qualified Data.Text.Lazy    as TL
-import qualified Data.Text.Lazy.IO as TLIO
-
-firstWord :: String
-firstWord = "pessimism"
-
-secondWord :: T.Text
-secondWord = T.pack firstWord
-
-thirdWord :: String
-thirdWord = T.unpack secondWord
+import           Data.Semigroup                 ( (<>) )
+import qualified Data.Text                     as T
+import qualified Data.Text.Lazy                as TL
+import qualified Data.Text.Lazy.IO             as TLIO
 
 --
--- QC2301
-fourthWord :: T.Text
-fourthWord = T.pack thirdWord
-
+-- Using Data.Text
 --
+
+word1 :: String
+word1 = "pessimism"
+
+word2 :: T.Text
+word2 = T.pack word1
+
+word3 :: String
+word3 = T.unpack word2
+
+-- QC1
+
+word4 :: T.Text
+word4 = T.pack word3
+
 -- With language extension:
---
+
 sampleInput :: T.Text
 sampleInput = "this\nis some\ninput"
 
---
---
--- NOTE: None of these "work" because of the Text type
---
--- T.lines sampleInput == ["this","is some","input"]
--- T.words sampleInput == ["this","is","some","input"]
--- T.splitOn (T.pack "is") sampleInput == ["th","\n"," some\ninput"]
--- T.unlines (T.lines sampleInput) == "this\nis some\ninput\n"
--- T.unwords (T.words sampleInput) == "this is some input"
--- T.intercalate (T.pack ",") (T.words sampleInput) == "this,is,some,input"
---
---
+{-
+NOTE: None of these "work" because of the Text type
+T.lines sampleInput == ["this","is some","input"]
+T.words sampleInput == ["this","is","some","input"]
+T.splitOn (T.pack "is") sampleInput == ["th","\n"," some\ninput"]
+T.unlines (T.lines sampleInput) == "this\nis some\ninput\n"
+T.unwords (T.words sampleInput) == "this is some input"
+T.intercalate (T.pack ",")
+(T.words sampleInput) == "this,is,some,input"
+-}
+
 combinedTextMonoid :: T.Text
 combinedTextMonoid = mconcat ["some", " ", "text"]
 
@@ -47,7 +49,7 @@ combinedTextSemigroup = "some" <> " " <> "text"
 
 --
 --
--- QC2303
+-- QC3
 lines' :: T.Text -> [T.Text]
 lines' = T.splitOn "\n"
 
@@ -56,10 +58,10 @@ unlines' = T.intercalate "\n"
 
 --
 --
--- Q2301
+-- Q1
 -- See hello_world.hs
 --
--- Q2302
+-- Q2
 -- Cheated.
 -- Q: Why is there no lazy read?
 --

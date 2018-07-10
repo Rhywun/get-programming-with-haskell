@@ -25,31 +25,28 @@ word3 = T.unpack word2
 word4 :: T.Text
 word4 = T.pack word3
 
--- With language extension:
+-- With OverloadedStrings language extension:
 
 sampleInput :: T.Text
 sampleInput = "this\nis some\ninput"
 
 {-
-NOTE: None of these "work" because of the Text type
-T.lines sampleInput == ["this","is some","input"]
-T.words sampleInput == ["this","is","some","input"]
-T.splitOn (T.pack "is") sampleInput == ["th","\n"," some\ninput"]
-T.unlines (T.lines sampleInput) == "this\nis some\ninput\n"
-T.unwords (T.words sampleInput) == "this is some input"
-T.intercalate (T.pack ",")
-(T.words sampleInput) == "this,is,some,input"
+T.lines sampleInput -- ["this","is some","input"]
+T.words sampleInput -- ["this","is","some","input"]
+T.splitOn (T.pack "is") sampleInput -- ["th","\n"," some\ninput"]
+T.unlines (T.lines sampleInput) -- "this\nis some\ninput\n"
+T.unwords (T.words sampleInput) -- "this is some input"
+T.intercalate (T.pack ",") (T.words sampleInput) -- "this,is,some,input"
 -}
 
 combinedTextMonoid :: T.Text
-combinedTextMonoid = mconcat ["some", " ", "text"]
+combinedTextMonoid = mconcat ["some", " ", "text"] -- "some text"
 
 combinedTextSemigroup :: T.Text
-combinedTextSemigroup = "some" <> " " <> "text"
+combinedTextSemigroup = "some" <> " " <> "text" -- "some text"
 
---
---
 -- QC3
+
 lines' :: T.Text -> [T.Text]
 lines' = T.splitOn "\n"
 
@@ -57,14 +54,17 @@ unlines' :: [T.Text] -> T.Text
 unlines' = T.intercalate "\n"
 
 --
+-- Text and Unicode & Text I/O
+-- see bg_highlight.hs
 --
+
 -- Q1
 -- See hello_world.hs
---
+
 -- Q2
 -- Cheated.
 -- Q: Why is there no lazy read?
---
+
 toInts :: TL.Text -> [Int]
 toInts = map (read . TL.unpack) . TL.lines
 

@@ -2,8 +2,8 @@
 
 import           System.Environment
 import           System.IO
-import qualified Data.Text as T
-import qualified Data.Text.IO as TI
+import qualified Data.Text                     as T
+import qualified Data.Text.IO                  as TI
 
 
 -- E.g. getCounts "Hello, world!\nGood-bye, world!" == (30, 4, 2)

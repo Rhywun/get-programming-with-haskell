@@ -1,5 +1,5 @@
-import           Data.Text          (toUpper)
-import qualified Data.Text.IO       as TIO
+import           Data.Text                      ( toUpper )
+import qualified Data.Text.IO                  as TIO
 import           System.Environment
 
 main :: IO ()

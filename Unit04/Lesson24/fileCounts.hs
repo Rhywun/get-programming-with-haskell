@@ -1,14 +1,21 @@
 import           System.Environment
 import           System.IO
 
--- E.g. getCounts "Hello, world!\nGood-bye, world!" == (30, 4, 2)
+{-
+getCounts "Hello, world!\nGood-bye, world!" -- (30, 4, 2)
+-}
 getCounts :: String -> (Int, Int, Int)
 getCounts xs = (length xs, (length . words) xs, (length . lines) xs)
 
--- E.g. describeCounts (30, 4, 2) == "chars:  30  words:  4  lines:  2"
+{-
+describeCounts (30, 4, 2) -- "chars:  30  words:  4  lines:  2"
+-}
 describeCounts :: (Int, Int, Int) -> String
 describeCounts (cc, wc, lc) =
   unwords ["chars: ", show cc, " words: ", show wc, " lines: ", show lc]
+
+-- QC3
+-- It is preferable to use `unwords` because we might want to use Text.
 
 -- This version won't work on stats.dat becasue the file is locked while writing
 {-
@@ -32,5 +39,5 @@ main = do
   input <- hGetContents file
   let summary = (describeCounts . getCounts) input
   putStrLn summary
-  hClose file
+  hClose file -- moved here to prevent lazy evaluation error
   appendFile "stats.dat" (mconcat [fileName, " ", summary, "\n"])

@@ -11,7 +11,7 @@ import           Data.Maybe
 --
 
 howMany :: Int
-howMany = 10
+howMany = 500
 
 main :: IO ()
 main = do
@@ -175,7 +175,7 @@ lookupFieldMetadata aTag record = if length results < 1
   results  = filter ((== aTag) . tag) metadata
 
 lookupSubfield :: (Maybe FieldMetadata) -> Char -> MarcRecordRaw -> Maybe T.Text
-lookupSubfield Nothing              subfield record = Nothing
+lookupSubfield Nothing              _        _      = Nothing
 lookupSubfield (Just fieldMetadata) subfield record = if results == []
   then Nothing
   else Just ((T.drop 1 . head) results)
@@ -208,4 +208,4 @@ pairsToBooks pairs = map
   where justPairs = filter (\(title, author) -> isJust title && isJust author) pairs
 
 processRecords :: Int -> B.ByteString -> Html
-processRecords n = booksToHtml . pairsToBooks . (take n) .  marcToPairs
+processRecords n = booksToHtml . pairsToBooks . (take n) . marcToPairs

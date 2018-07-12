@@ -1,20 +1,19 @@
 module Lesson28 where
 
 --
---
 -- A command-line application for calculating the distance between cities
---
 -- see dist.hs
 --
+
 --
 -- Using a multi-argument function in IO using <$> and <*>
---
 -- see min3.hs
 --
+
 --
 -- Using <*> to create data in a context
 --
---
+
 data User = User
   { name    :: String
   , gamerId :: Int

@@ -36,7 +36,6 @@ haversine coords1 coords2 = earthRadius * c
   earthRadius     = 3961.0
 
 -- Print the (potentially missing) distance
-
 printDistance :: Maybe Double -> IO ()
 printDistance Nothing         = putStrLn "City not found."
 printDistance (Just distance) = putStrLn (show distance ++ " miles")
@@ -63,38 +62,60 @@ distanceFromNY = haversine (40.7776, -73.9691)
 maybeInc :: Maybe (Integer -> Integer)
 maybeInc = (+) <$> Just 1
 
+--
+-- Using <*> for partial application in a context
+--
+
 -- Applicative to the rescue
 {-
   (<*>) :: Applicative f => f (a -> b) -> f a -> f b
+  -- Just like fmap except the fuction is in a context too
 -}
--- E.g.         maybeInc <*> Just 4 == Just 5
--- i.e.   (+) <$> Just 1 <*> Just 4 == Just 5
+
+-- Examples:
+{-
+maybeInc <*> Just 4                       -- Just 5
+(+) <$> Just 1 <*> Just 4                 -- Just 5
+maybeInc <*> Nothing                      -- Nothing
+(++) <$> Just "cats" <*> Just " and dogs" -- Just "cats and dogs"
+(++) <$> Nothing <*> Just " and dogs"     -- Nothing
+(++) <$> Just "cats" <*> Nothing          -- Nothing
+-}
+
 -- QC3
+
+val1 :: Maybe Int
 val1 = Just 10
 
+val2 :: Maybe Int
 val2 = Just 5
 
-e1 = (*) <$> val1 <*> val2 -- == Just 50
+qc3_1 :: Maybe Int
+qc3_1 = (*) <$> val1 <*> val2 -- Just 50
 
-e2 = div <$> val1 <*> val2 -- == Just 2
+qc3_2 :: Maybe Int
+qc3_2 = div <$> val1 <*> val2 -- Just 2
 
-e3 = mod <$> val1 <*> val2 -- == Just 0
+qc3_3 :: Maybe Int
+qc3_3 = mod <$> val1 <*> val2 -- Just 0
 
---
--- Solution
---
+-- Using <*> to finish your city distance program
+
+start :: Maybe LatLong
 start = Map.lookup "Carcosa" locationDB
 
+dest :: Maybe LatLong
 dest = Map.lookup "Innsmouth" locationDB
 
+dist :: Maybe Double
 --     partial application
 --     vvvvvvvvvvvvvvvvvvv
 dist = haversine <$> start <*> dest
-
 --                   ^^^^^^^^^^^^^^
 --             allows completion in context
+
 --
---
+
 main :: IO ()
 main = do
   putStr "Starting city? "

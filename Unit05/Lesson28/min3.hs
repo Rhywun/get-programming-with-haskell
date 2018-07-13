@@ -13,7 +13,6 @@ main = do
   n <- minOfThreeInts
   putStrLn (show n ++ " is the smallest.")
 
---
--- QC2804
+-- QC4
+
 minOfThreeMaybeInts = minOfThree <$> Just 10 <*> Just 3 <*> Just 6 :: Maybe Int
--- ==> Just 3

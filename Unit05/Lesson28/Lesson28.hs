@@ -5,10 +5,8 @@ module Lesson28 where
 -- see dist.hs
 --
 
---
 -- Using a multi-argument function in IO using <$> and <*>
 -- see min3.hs
---
 
 --
 -- Using <*> to create data in a context
@@ -49,14 +47,17 @@ main = do
   user <- User <$> getLine <*> readInt <*> readInt
   print user
 
---
--- QC2805
+-- QC5
+
 -- userMissingName == Nothing
 userMissingName = User <$> Nothing <*> Just 2001 <*> Just 0
 
 --
--- Q2801, 02
+-- Summary
+--
+
+-- Q1, 02
 -- see dist.hs
 
--- Q2803
+-- Q3
 -- see robots.hs

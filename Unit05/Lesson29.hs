@@ -28,8 +28,9 @@ qc2 = pure "Hello World!"
 -- List as a context
 --
 
--- ex1 == [1500,21000,2500,22000,3500,23000]   i.e. all possible sums
+ex1 :: [Int]
 ex1 = pure (+) <*> [1000, 2000, 3000] <*> [500, 20000]
+  -- [1500,21000,2500,22000,3500,23000]   i.e. all possible sums
 
 -- A game show example
 
@@ -42,78 +43,102 @@ boxPrize = [500, 20000]
 -- Deterministic - obviously, this won't compile:
 -- totalPrize = (+) doorPrize boxPrize
 
--- Non-deterministic
+-- Non-deterministic:
+totalPrize :: [Int]
 totalPrize = pure (+) <*> doorPrize <*> boxPrize
 
 -- QC4
 
--- qc4 == [10000,50000,20000,100000,30000,150000]
-qc4 = pure (*) <*> doorPrize <*> [10, 50]
+qc4 :: [Int]
+qc4 = pure (*) <*> doorPrize <*> [10, 50] -- [10000,50000,20000,100000,30000,150000]
 
---
--- Prime numbers
---
+-- Generating the first N prime numbers
+
+-- Composites are easy to generate with Applicative:
+someComposites :: [Int]
+someComposites = (*) <$> [2 .. 4] <*> [2 .. 4] -- [4,6,8,6,9,12,8,12,16]
 
 -- Simple, if inefficient, prime number generator
--- E.g. primesToN 32 == [2,3,5,7,11,13,17,19,23,29,31]
+{-
+primesToN 32   -- [2,3,5,7,11,13,17,19,23,29,31]
+primesToN 1000 -- (slow!)
+-}
 primesToN :: Integer -> [Integer]
 primesToN n = filter notComposite twoToN
  where
   twoToN       = [2 .. n]
-  composite    = pure (*) <*> twoToN <*> twoToN
+  composite    = (*) <$> twoToN <*> twoToN
   notComposite = not . (`elem` composite)
 
---
--- Generate large amounts of test data
---
+-- Quickly generating large amounts of test data
+
 data User = User
   { name    :: String
   , gamerID :: Int
   , score   :: Int
   } deriving (Show)
 
+testNames :: [String]
 testNames =
   ["John Smith", "Robert'); DROP TABLE Students;--", "Christina NULL", "Randall Munroe"]
 
+testIDs :: [Int]
 testIDs = [1337, 0123, 999999]
 
+testScores :: [Int]
 testScores = [0, 100000, -99999]
 
+{-
+length testData -- 36
+-}
 testData :: [User]
 testData = pure User <*> testNames <*> testIDs <*> testScores
 
 -- QC5
 
+testNames'  :: [String]
 testNames' = "Rhywun" : testNames
 
+{-
+length testData' -- 45
+-}
+testData' :: [User]
 testData' = pure User <*> testNames' <*> testIDs <*> testScores
-
-qc5 = length testData' -- == 45
 
 -- Q1
 
+{-
+allFmap (+ 1) [1,2,3]  -- [2,3,4]
+allFmap (+ 1) (Just 5) -- Just 6
+allFmap (+ 1) Nothing  -- Nothing
+-}
 allFmap :: Applicative f => (a -> b) -> f a -> f b
 allFmap f x = pure f <*> x
 
 -- Q2
 
 example :: Int
-example = (*) ((+) 2 4) 5 -- == 30
+example = (*) ((+) 2 4) 5 -- 30
 
 exampleMaybe :: Maybe Int
-exampleMaybe = pure (*) <*> pure ((+) 2 4) <*> pure 5 -- == Just 30
+exampleMaybe = pure (*) <*> pure ((+) 2 4) <*> pure 5 -- Just 30
 
 -- Q3
 
+bought :: [Int]
 bought = [6, 12]
 
+drank :: [Int]
 drank = [-4]
 
+peeps :: [Int]
 peeps = [3, 5]
 
+perPeep :: [Int]
 perPeep = [3, 4]
 
 -- subtract (peeps * perPeep) from bought + drank, answer is the max num of beers
+q3 :: [Int]
 q3 = pure (-) <*> (pure (+) <*> bought <*> drank) <*> (pure (*) <*> peeps <*> perPeep)
 
 -- q3 == [-7,-10,-13,-18,-1,-4,-7,-12]

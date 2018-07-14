@@ -1,3 +1,5 @@
+module Unit06.Lesson28.Min3 where
+
 minOfThree :: (Ord a) => a -> a -> a -> a
 minOfThree x y z = minimum [x, y, z]
 
@@ -15,4 +17,5 @@ main = do
 
 -- QC4
 
-minOfThreeMaybeInts = minOfThree <$> Just 10 <*> Just 3 <*> Just 6 :: Maybe Int
+minOfThreeMaybeInts :: Maybe Int
+minOfThreeMaybeInts = minOfThree <$> Just 10 <*> Just 3 <*> Just 6 -- Just 3

@@ -19,7 +19,10 @@ data User = User
   } deriving (Show)
 
 -- Note the we can create a User with regular function syntax:
--- E.g. sue == User {name = "Sue", gamerId = 1337, score = 9001}
+{-
+sue -- User {name = "Sue", gamerId = 1337, score = 9001}
+-}
+sue :: User
 sue = User "Sue" 1337 9001
 
 -- Maybe context
@@ -33,7 +36,10 @@ serverGamerId = Just 1337
 serverScore :: Maybe Int
 serverScore = Just 9001
 
--- serverSue == Just (User {name = "Sue", gamerId = 1337, score = 9001})
+{-
+serverSue -- Just (User {name = "Sue", gamerId = 1337, score = 9001})
+-}
+serverSue :: Maybe User
 serverSue = User <$> serverUsername <*> serverGamerId <*> serverScore
 
 -- IO context
@@ -49,8 +55,8 @@ main = do
 
 -- QC5
 
--- userMissingName == Nothing
-userMissingName = User <$> Nothing <*> Just 2001 <*> Just 0
+userMissingName :: Maybe User
+userMissingName = User <$> Nothing <*> Just 2001 <*> Just 0 -- Nothing
 
 --
 -- Summary

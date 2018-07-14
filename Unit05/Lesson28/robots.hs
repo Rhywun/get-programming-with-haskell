@@ -1,3 +1,5 @@
+module Robots where
+
 import qualified Data.Map   as Map
 
 data RobotPart = RobotPart

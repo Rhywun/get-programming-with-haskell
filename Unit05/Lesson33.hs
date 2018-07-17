@@ -4,24 +4,18 @@ import           Control.Applicative
 import           Control.Monad
 
 --
---
 -- Getting started
 --
---
+
 data Name = Name
   { firstName :: String
   , lastName  :: String
   }
 
 instance Show Name where
-  show (Name first last) = mconcat [first, " ", last]
+  show (Name fn ln) = mconcat [fn, " ", ln]
 
-data GradeLevel
-  = Freshman
-  | Sophmore
-  | Junior
-  | Senior
-  deriving (Eq, Ord, Enum, Show)
+data GradeLevel = Freshman | Sophmore | Junior | Senior deriving (Eq, Ord, Enum, Show)
 
 data Student = Student
   { studentId   :: Int
@@ -29,38 +23,34 @@ data Student = Student
   , studentName :: Name
   } deriving (Show)
 
+students :: [Student]
 students =
-  [ Student 1 Senior (Name "Audre" "Lorde")
-  , Student 2 Junior (Name "Leslie" "Silko")
+  [ Student 1 Senior   (Name "Audre" "Lorde")
+  , Student 2 Junior   (Name "Leslie" "Silko")
   , Student 3 Freshman (Name "Judith" "Butler")
-  , Student 4 Senior (Name "Guy" "Debord")
+  , Student 4 Senior   (Name "Guy" "Debord")
   , Student 5 Sophmore (Name "Jean" "Baudrillard")
-  , Student 6 Junior (Name "Julia" "Kristeva")
+  , Student 6 Junior   (Name "Julia" "Kristeva")
   ]
 
 --
---
 -- SELECT
 --
---
--- E.g. _select (firstName . studentName) students
---        == ["Audre","Leslie","Judith","Guy","Jean","Julia"]
---      _select' (\x -> (studentName x, gradeLevel x)) students
---        == [(Audre Lorde,Senior),(Leslie Silko,Junior), ...]
--- _select :: (a -> b) -> [a] -> [b]
+
+-- Notice the signature is the same as for `fmap` except specialized to Monad
+
+{-
+_select gradeLevel students
+_select (firstName . studentName) students
+_select (\x -> (studentName x, gradeLevel x)) students
+-}
 _select :: Monad m => (a -> b) -> m a -> m b
-_select f xs = do
-  x <- xs
-  return (f x)
+_select f xs = f <$> xs
 
--- Or:
-_select' f xs = f <$> xs
-
---
 --
 -- WHERE
 --
---
+
 -- E.g. _where (startsWith 'J' . firstName) students
 -- _where :: (a -> Bool) -> [a] -> [a]
 _where :: (Monad m, Alternative m) => (a -> Bool) -> m a -> m a
@@ -79,19 +69,16 @@ startsWith char string = char == head string
 js = _where (startsWith 'J' . firstName) (_select studentName students)
 
 --
---
 -- JOIN
 --
---
+
 data Teacher = Teacher
   { teacherId   :: Int
   , teacherName :: Name
   } deriving (Show)
 
 teachers =
-  [ Teacher 100 (Name "Simone" "De Beauvior")
-  , Teacher 200 (Name "Susan" "Sontag")
-  ]
+  [Teacher 100 (Name "Simone" "De Beauvior"), Teacher 200 (Name "Susan" "Sontag")]
 
 data Course = Course
   { courseId    :: Int
@@ -103,13 +90,7 @@ courses = [Course 101 "French" 100, Course 201 "English" 200]
 
 -- E.g. _join teachers courses teacherId teacher
 -- _join :: Eq c => [a] -> [b] -> (a -> c) -> (b -> c) -> [(a, b)]
-_join ::
-     (Monad m, Alternative m, Eq c)
-  => m a
-  -> m b
-  -> (a -> c)
-  -> (b -> c)
-  -> m (a, b)
+_join :: (Monad m, Alternative m, Eq c) => m a -> m b -> (a -> c) -> (b -> c) -> m (a, b)
 _join data1 data2 prop1 prop2 = do
   d1 <- data1
   d2 <- data2
@@ -139,14 +120,13 @@ selectResult = _select (teacherName . fst) whereResult -- == [Susan Sontag]
 -- Here's one way:
 _hinq selectQuery joinQuery whereQuery = (selectQuery . whereQuery) joinQuery
 
-finalResult =
-  _hinq
-    (_select (teacherName . fst))
-    (_join teachers courses teacherId teacher)
-    (_where ((== "English") . courseTitle . snd))
+finalResult = _hinq (_select (teacherName . fst))
+                    (_join teachers courses teacherId teacher)
+                    (_where ((== "English") . courseTitle . snd))
 
 -- What if we don't need a WHERE clause?
-teacherFirstName = _hinq (_select firstName) finalResult (_where (const True)) -- We can do better
+teacherFirstName = _hinq (_select firstName) finalResult (_where (const True))
+  -- We can do better
 
 --
 --
@@ -165,28 +145,24 @@ data HINQ m a b
 
 runHINQ :: (Monad m, Alternative m) => HINQ m a b -> m b
 runHINQ (HINQ sClause jClause wClause) = _hinq sClause jClause wClause
-runHINQ (HINQ_ sClause jClause) = _hinq sClause jClause (_where (const True))
+runHINQ (HINQ_ sClause jClause       ) = _hinq sClause jClause (_where (const True))
 
---
 --
 -- Running your HINQ queries
 --
---
+
 -- E.g. runHINQ query1 == [Susan Sontag]
 query1 :: HINQ [] (Teacher, Course) Name
-query1 =
-  HINQ
-    (_select (teacherName . fst))
-    (_join teachers courses teacherId teacher)
-    (_where ((== "English") . courseTitle . snd))
+query1 = HINQ (_select (teacherName . fst))
+              (_join teachers courses teacherId teacher)
+              (_where ((== "English") . courseTitle . snd))
 
 -- E.g. runHINQ query2 == [Simone De Beauvior,Susan Sontag]
 query2 :: HINQ [] Teacher Name
 query2 = HINQ_ (_select teacherName) teachers
 
---
 -- HINQ with Maybe types
---
+
 possibleTeacher :: Maybe Teacher
 possibleTeacher = Just (head teachers)
 
@@ -195,21 +171,17 @@ possibleCourse = Just (head courses)
 
 -- E.g. runHINQ maybeQuery1 == Just Simone De Beauvior
 maybeQuery1 :: HINQ Maybe (Teacher, Course) Name
-maybeQuery1 =
-  HINQ
-    (_select (teacherName . fst))
-    (_join possibleTeacher possibleCourse teacherId teacher)
-    (_where ((== "French") . courseTitle . snd))
+maybeQuery1 = HINQ (_select (teacherName . fst))
+                   (_join possibleTeacher possibleCourse teacherId teacher)
+                   (_where ((== "French") . courseTitle . snd))
 
 missingCourse :: Maybe Course
 missingCourse = Nothing
 
 -- E.g. runHINQ maybeQuery2 == Nothing
 maybeQuery2 :: HINQ Maybe (Teacher, Course) Name
-maybeQuery2 =
-  HINQ
-    (_select (teacherName . fst))
-    (_join possibleTeacher missingCourse teacherId teacher)
-    (_where ((== "French") . courseTitle . snd))
+maybeQuery2 = HINQ (_select (teacherName . fst))
+                   (_join possibleTeacher missingCourse teacherId teacher)
+                   (_where ((== "French") . courseTitle . snd))
 
 -- Enough!

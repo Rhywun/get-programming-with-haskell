@@ -1,9 +1,17 @@
 module Palindrome
   ( isPalindrome
-  ) where
+  )
+where
 
-import           Data.Char (isPunctuation, isSpace)
-import           Data.Text as T (Text, filter, toLower, reverse)
+import           Data.Char                      ( isPunctuation
+                                                , isSpace
+                                                )
+import           Data.Text                     as T
+                                                ( Text
+                                                , filter
+                                                , toLower
+                                                , reverse
+                                                )
 
 stripWhiteSpace :: Text -> Text
 stripWhiteSpace = T.filter (not . isSpace)
@@ -18,6 +26,4 @@ preprocess :: Text -> Text
 preprocess = stripWhiteSpace . stripPunctuation . toLowerCase
 
 isPalindrome :: Text -> Bool
-isPalindrome text = cleanText == T.reverse cleanText
-  where
-    cleanText = preprocess text
+isPalindrome text = cleanText == T.reverse cleanText where cleanText = preprocess text

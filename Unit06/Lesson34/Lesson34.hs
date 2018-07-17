@@ -9,14 +9,24 @@ head [] = errorEmptyList "head"
 example :: [[Int]]
 example = []
 
--- Oops - `head` is already defined in Prelude, but we can still
--- call it like this:
--- E.g. Lesson34.head example == []
+-- Oops - `head` is already defined in Prelude, but we can still call it like this:
+{-
+Lesson34.head example -- []
+-}
 head :: Monoid a => [a] -> a
 head (x:_) = x
 head [] = mempty
 
--- QC3401
-length = 8 :: Int
-qc1 = Lesson34.length * 2 -- == 16
+-- QC1
 
+length :: Int
+length = 8
+
+qc1 :: Int
+qc1 = Lesson34.length * 2 -- 16
+
+--
+-- Building a multifile program with modules
+-- Q1
+-- see Main.hs and Palindrome.hs
+--

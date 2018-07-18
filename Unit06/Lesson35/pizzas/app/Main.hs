@@ -14,7 +14,7 @@ main = do
   size2 <- getLine
   putStr "What is the cost of pizza 2? "
   cost2 <- getLine
-  let pizza1 = (read size1, read cost1)
-  let pizza2 = (read size2, read cost2)
+  let pizza1      = (read size1, read cost1)
+  let pizza2      = (read size2, read cost2)
   let betterPizza = cheaperPizza pizza1 pizza2 -- cheaper is better!
   putStrLn (describePizza betterPizza)

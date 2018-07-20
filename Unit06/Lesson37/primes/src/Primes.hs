@@ -29,3 +29,21 @@ isPrime n | n < 2              = Nothing
           | n >= length primes = Nothing
           | otherwise          = Just (n `elem` primes)
 
+{-
+unsafePrimeFactors 20 primes -- [2,2,5]
+-}
+unsafePrimeFactors :: Int -> [Int] -> [Int]
+unsafePrimeFactors 0 []              = []
+unsafePrimeFactors n []              = []
+unsafePrimeFactors n (next : primes) = if n `mod` next == 0
+  then next : unsafePrimeFactors (n `div` next) (next : primes)
+  else unsafePrimeFactors n primes
+
+{-
+primeFactors 20 -- Just [2,2,5]
+-}
+primeFactors :: Int -> Maybe [Int]
+primeFactors n | n < 2              = Nothing
+               | n >= length primes = Nothing
+               | otherwise          = Just (unsafePrimeFactors n primesLessThanN)
+  where primesLessThanN = filter (<= n) primes

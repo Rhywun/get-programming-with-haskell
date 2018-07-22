@@ -1,12 +1,14 @@
+module Book where
+
 import           Data.Aeson
-import           Data.ByteString.Lazy       as B
-import           Data.ByteString.Lazy.Char8 as BC
-import           Data.Text                  as T
+import           Data.ByteString.Lazy          as B
+import           Data.ByteString.Lazy.Char8    as BC
+import           Data.Text                     as T
 import           GHC.Generics
 
 -- A data type we created
 -- Easy to derive from FromJSON and ToJSON because we control the field names
---
+
 data Book = Book
   { title  :: T.Text
   , author :: T.Text
@@ -38,3 +40,13 @@ bookFromWrongJSON = decode wrongJSON :: Maybe Book
 
 -- Left "Error in $: key \"author\" not present"
 bookFromWrongJSON' = eitherDecode wrongJSON :: Either String Book
+
+-- QC2
+
+data Name = Name
+  { firstName :: T.Text
+  , lastName :: T.Text
+  } deriving (Show, Generic)
+
+instance FromJSON Name
+instance ToJSON Name

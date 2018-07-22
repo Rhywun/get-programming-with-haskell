@@ -6,7 +6,8 @@
 
 name:           json-lesson
 version:        0.1.0.0
-description:    Please see the README on Github at <https://github.com/Rhywun/json-lesson#readme>
+description:
+    Please see the README on Github at <https://github.com/Rhywun/json-lesson#readme>
 homepage:       https://github.com/Rhywun/json-lesson#readme
 bug-reports:    https://github.com/Rhywun/json-lesson/issues
 author:         Patrick Huffer
@@ -49,6 +50,8 @@ executable json-lesson-exe
     , text
   other-modules:
       Paths_json_lesson
+    , Book
+    , ErrorMessage
   default-language: Haskell2010
   extensions:
       OverloadedStrings

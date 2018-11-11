@@ -1,0 +1,21 @@
+name:                get-programming-with-haskell
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/rhywun/programming-in-haskell#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Patrick Huffer
+maintainer:          rhywun@rhywun.com
+copyright:           2018 Patrick Huffer
+category:            Education
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+
+library
+  exposed-modules:
+  other-modules:     Paths_get_programming_with_haskell
+  hs-source-dirs:    .
+  default-language:  Haskell2010
+  build-depends:     base >=4.7 && <5

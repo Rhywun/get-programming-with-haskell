@@ -1,7 +1,5 @@
 module Lesson14 where
 
-import           Data.List
-
 -- Consider this
 
 data NewEngland = CT | MA | ME | NH | RI | VT
@@ -37,10 +35,10 @@ instance Show SixSidedDie' where
 --
 
 poly1 :: Int
-poly1 = read "10" :: Int -- 10
+poly1 = read "10" -- 10
 
 poly2 :: Double
-poly2 = read "10" :: Double -- 10.0
+poly2 = read "10" -- 10.0
 
 --
 -- Default implementation and minimum complete definitions
@@ -92,7 +90,7 @@ data SixSidedDie = S1 | S2 | S3 | S4 | S5 | S6 deriving (Show, Eq, Ord, Enum)
 -- Type classes for more-complex types
 --
 
--- see text for discussion of `newtype`
+-- See p. 153 for discussion of `newtype`
 newtype Name = Name (String, String) deriving (Show, Eq)
 
 names :: [Name]
@@ -104,8 +102,8 @@ instance Ord Name where
   compare (Name (f1, l1)) (Name (f2, l2)) = compare (l1, f1) (l2, f2)
 
 {-
-sort names -->
-[Name ("Emil","Cioran"),Name ("Friedrich","Nietzsche"),Name ("Eugene","Thacker")]
+Data.List.sort names
+  -- [Name ("Emil","Cioran"),Name ("Friedrich","Nietzsche"),Name ("Eugene","Thacker")]
 -}
 
 --
@@ -123,17 +121,11 @@ instance Ord Boo where
   compare x y = compare (fromEnum x) (fromEnum y)
 
 -- Q2
-{-
-class Integral a => Die a where
-  sides :: a
-  roll :: a -> a
 
-newtype FiveSidedDie = D5 Int deriving Show
+data FiveSidedDie = Roll1 | Roll2 | Roll3 | Roll4 | Roll5 deriving (Show, Eq, Ord, Enum)
+
+class (Eq a, Enum a) => Die a where
+  sides :: a -> Int
 
 instance Die FiveSidedDie where
-  sides = 5
-
--- PASS
--- I'm trying to come up with a class Die that holds the number of sides so I can
--- have subclasses that don't look like S1 | S2 | etc. etc. but I can't figure it out.
--}
+  sides x = 5

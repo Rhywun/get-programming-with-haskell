@@ -6,14 +6,24 @@ data BreakfastSide = Toast | Biscuit | Homefries | Fruit deriving Show
 data BreakfastMeat = Sausage | Bacon | Ham deriving Show
 data BreakfastMain = Egg | Pancake | Waffle deriving Show
 
+data BreakfastSpecial
+  = KidsSpecial BreakfastMain BreakfastSide
+  | BasicSpecial BreakfastMain BreakfastMeat BreakfastSide
+  | LumberjackSpecial BreakfastMain BreakfastMain
+                      BreakfastMeat BreakfastMeat
+                      BreakfastSide BreakfastSide BreakfastSide
+  deriving Show
+
+breakfast1 = KidsSpecial Waffle Homefries
+breakfast2 = BasicSpecial Egg Sausage Toast
+
+-- An invalid breakfast cannot be formed:
 {-
-data BreakfastSpecial = ?
-      Kids’ breakfast — One main and one side
-      or
-      Basic breakfast — One main, one meat, and one side
-      or
-      The lumberjack! — Two mains, two meats, and three sides
+breakfast3 = BasicSpecial Egg Sausage Bacon
 -}
+
+-- But an "incomplete" breakfast CAN be formed - it's just a function awaiting more args:
+breakfast4 = LumberjackSpecial Egg Pancake
 
 --
 -- Product types - combining types with “and”

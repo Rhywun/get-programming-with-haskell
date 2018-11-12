@@ -7,11 +7,10 @@ module Lesson15 where
 data FourLetterAlphabet = L1 | L2 | L3 | L4 deriving (Eq, Show, Enum, Bounded)
 
 -- Rotate an enum `enum` halfway around an alphabet of size `size`
--- (N.B. - I don't see a need for Bounded here)
 {-
 rotN 4 L4 -- L2
 -}
-rotN :: (Enum a) => Int -> a -> a
+rotN :: (Bounded a, Enum a) => Int -> a -> a
 rotN size enum = toEnum rotation   -- E.g. L2
  where
   half     = size `div` 2          -- E.g. 2
@@ -19,6 +18,9 @@ rotN size enum = toEnum rotation   -- E.g. L2
   rotation = offset `mod` size     -- E.g. 5 `mod` 4 == 1
 
 -- Char-specific rotN
+{-
+rotChar 'A' -- '\557121'
+-}
 rotChar :: Char -> Char
 rotChar = rotN size where size = 1 + fromEnum (maxBound :: Char)
 

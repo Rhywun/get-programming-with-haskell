@@ -11,6 +11,8 @@ import           Data.Semigroup                 ( Semigroup
 ct1 :: String
 ct1 = "this" ++ " " ++ "is" ++ " " ++ "a" ++ " " ++ "bit" ++ " " ++ "much"
 
+ct1' = mconcat ["this", " ", "a", " ", "bit", " ", "much"]
+
 --
 -- Intro to composability - combining functions
 --
@@ -56,7 +58,7 @@ any' p = or . map p -- `or` returns whether any of a list of Bools is True
 2 <> 3 -- 5
 -}
 instance Semigroup Integer where
-  (<>) x y = x + y
+  (<>) = (+)
 
 -- QC2
 -- No, because division can return a Double.
@@ -65,11 +67,11 @@ instance Semigroup Integer where
 
 data Color
   = Red
-  | Yellow
-  | Blue
-  | Green
-  | Purple
   | Orange
+  | Yellow
+  | Green
+  | Blue
+  | Violet
   | Brown
   | Transparent
   deriving (Show, Eq)
@@ -89,14 +91,14 @@ Green <> Purple -- Brown
 instance Semigroup Color where
   Transparent <> c = c
   c <> Transparent = c
-  Red <> Blue = Purple
-  Blue <> Red = Purple
+  Red <> Blue = Violet
+  Blue <> Red = Violet
   Yellow <> Blue = Green
   Blue <> Yellow = Green
   Yellow <> Red = Orange
   Red <> Yellow = Orange
   a <> b | a == b = a
-         | all (`elem` [Red, Blue, Purple]) [a, b]   = Purple
+         | all (`elem` [Red, Blue, Violet]) [a, b]   = Violet
          | all (`elem` [Blue, Yellow, Green]) [a, b] = Green
          | all (`elem` [Red, Yellow, Orange]) [a, b] = Orange
          | otherwise = Brown
@@ -120,7 +122,7 @@ class Semigroup a => Monoid a where
   identity :: a
 -}
 
--- Actually:
+-- Actually (NOTE: Monoid now IS a subclass of Semigroup)
 {-
 class Monoid a where
   mempty :: a
@@ -149,10 +151,10 @@ mconcat ["a","b","cde"] -- "abcde"
 
 -- Monoid laws
 {-
-mappend mempty x == x
-mappend x mempty == x
+       mappend mempty x == x
+       mappend x mempty == x
 mappend x (mappend y z) == mappend (mappend x y) z
-mconcat == foldr mappend mempty
+                mconcat == foldr mappend mempty
 -}
 
 -- Practical Monoids - building probability tables
@@ -166,8 +168,13 @@ data PTable = PTable Events Probs
 -- Create a probability table, ensuring all probabilities sum to 1 by dividing
 -- all the probabilities by the sum of the probabilities
 {-
-createPTable ["heads", "tails"] [0.5, 0.5] -- heads|0.5
-                                              tails|0.5
+createPTable ["heads", "tails"] [0.5, 0.5]     -- heads, 0.5                (i.e. 0.5/1)
+                                                  tails, 0.5                (i.e. 0.5/1)
+createPTable ["heads", "tails"] [1, 2]         -- heads, 0.3333333333333333 (i.e. 1/3)
+                                                  tails, 0.6666666666666666 (i.e. 2/3)
+createPTable ["one", "two", "three"] [1, 2, 3] -- one, 0.16666666666666666  (i.e. 1/6)
+                                                  two, 0.3333333333333333   (i.e. 2/6)
+                                                  three, 0.5                (i.e. 3/6)
 -}
 createPTable :: Events -> Probs -> PTable
 createPTable events probs = PTable events normalizedProbs
@@ -178,7 +185,7 @@ createPTable events probs = PTable events normalizedProbs
 instance Show PTable where
   show (PTable events probs) = mconcat pairs
     where pairs               = zipWith showPair events probs
-          showPair event prob = mconcat [event, "|", show prob, "\n"]
+          showPair event prob = mconcat [event, ", ", show prob, "\n"]
 
 -- Generate all combinations of two lists using the specified function `f`
 {-

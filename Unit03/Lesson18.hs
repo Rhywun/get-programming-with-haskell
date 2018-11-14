@@ -2,6 +2,15 @@ module Lesson18 where
 
 import qualified Data.Map                      as Map
 
+-- Consider this
+
+type Latitude = Double
+type Longitude = Double
+
+data Coordinate = Coordinate Latitude Longitude deriving (Show)
+
+ct1 = Coordinate 40.632527 (-74.020869)
+
 --
 -- Types that take arguments
 --
@@ -15,7 +24,6 @@ wrap = Box
 
 unwrap :: Box a -> a
 unwrap (Box x) = x
-
 
 -- QC1
 -- :t wrap (Box 'a') --> Box (Box Char)
@@ -59,6 +67,8 @@ transform f (Triple x y z) = Triple (f x) (f y) (f z)
 
 -- QC2
 -- `map` can return a list with a different type from the original; `transform` can't.
+
+-- Lists
 
 -- Implement my own List type
 -- i.e. data [] a = [] | a:[a]
@@ -107,7 +117,7 @@ itemInventory = [itemCount1, itemCount2, itemCount3]
 
 -- Data.Map
 
-data Organ = Heart | Brain | Kidney | Spleen deriving (Show, Eq, Ord, Enum)
+data Organ = Heart | Brain | Kidney | Spleen deriving (Show, Eq, Ord, Enum, Bounded)
 
 organs :: [Organ]
 organs = [Heart, Heart, Brain, Spleen, Spleen, Kidney]
@@ -148,7 +158,7 @@ values :: [Organ]
 values = map snd (Map.toList catalog) -- [Heart,Heart,Brain,Spleen,Spleen,Kidney]
 
 allOrgans :: [Organ]
-allOrgans = [Heart .. Spleen] -- [Heart,Brain,Kidney,Spleen]
+allOrgans = [minBound .. maxBound] -- [Heart,Brain,Kidney,Spleen]
 
 -- Walk through the list of possible organs and count the number of
 -- matches of each in our catalog

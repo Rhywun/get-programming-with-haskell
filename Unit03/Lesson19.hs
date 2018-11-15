@@ -1,8 +1,16 @@
 module Lesson19 where
 
-import           Data.List
+import           Data.List                      ( intercalate )
 import qualified Data.Map                      as Map
 import           Data.Maybe
+
+-- Consider this
+
+groceries :: Map.Map String Int
+groceries = Map.fromList [("Milk", 1), ("Candy bars", 10), ("Cheese blocks", 2)]
+
+ct1 = Map.lookup "Milk" groceries -- Just 1
+ct2 = Map.lookup "MILK" groceries -- Nothing
 
 --
 -- Introducing Maybe: solving missing values with types
@@ -13,11 +21,11 @@ data Organ = Heart | Brain | Kidney | Spleen deriving (Show, Eq)
 organs :: [Organ]
 organs = [Heart, Heart, Brain, Spleen, Spleen, Kidney]
 
-ids' :: [Int]
-ids' = [2, 7, 13, 14, 21, 24]
+ids :: [Int]
+ids = [2, 7, 13, 14, 21, 24]
 
 organPairs :: [(Int, Organ)]
-organPairs = zip ids' organs
+organPairs = zip ids organs
 
 organCatalog :: Map.Map Int Organ
 organCatalog = Map.fromList organPairs

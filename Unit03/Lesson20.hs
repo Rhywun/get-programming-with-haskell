@@ -3,9 +3,7 @@ module Lesson20 where
 -- import           Data.List
 import qualified Data.Map                      as Map
 import           Data.Maybe
-import           Data.Semigroup                 ( Semigroup
-                                                , (<>)
-                                                )
+import           Data.Semigroup
 
 --
 -- Your data and the TS data type

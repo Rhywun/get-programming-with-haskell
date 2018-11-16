@@ -14,4 +14,6 @@ safeValue :: Int
 safeValue = mystery1 2 4 + mystery1 5 6
 
 -- Won't compile:
--- unsafeValue = (mystery2 2 4) + (mystery2 2 4)
+{-
+unsafeValue = (mystery2 2 4) + (mystery2 2 4)
+-}

@@ -1,7 +1,6 @@
 module Lesson21 where
 
--- HIE refuses to accept this import:
--- import           System.Random
+import           System.Random
 
 helloPerson :: String -> String
 helloPerson name = "Hello " ++ name ++ "!"
@@ -15,14 +14,19 @@ main1 = do
 
 -- QC1
 -- `getLine` retrieves the user's input. I would assume the type is String. (But
--- I would be wrong.)
+-- it's really IO String.)
+
+-- Consider this:
+-- "You can get a line of user input by using the `getLine` function. But each time
+-- `getLine` is called, it can clearly return a different result."
+
+-- It works because `getLine` runs in the IO context, which is designed for this
+-- purpose.
 
 --
 -- IO types - dealing with an impure world
 --
 
--- Skipping this example because HIE is broken
-{-
 minDie = 1 :: Int
 
 maxDie = 6 :: Int
@@ -31,7 +35,6 @@ main2 :: IO ()
 main2 = do
   dieRoll <- randomRIO (minDie, maxDie)
   print dieRoll
--}
 
 -- QC2
 -- No, because `getLine` returns IO String, not IO ().

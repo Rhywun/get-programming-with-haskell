@@ -2,7 +2,6 @@
 
 module Lesson23 where
 
-import           Data.Semigroup                 ( (<>) )
 import qualified Data.Text                     as T
 import qualified Data.Text.Lazy                as TL
 import qualified Data.Text.Lazy.IO             as TLIO

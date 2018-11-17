@@ -10,5 +10,7 @@ lookupQuote (x   : xs) = quote : lookupQuote xs where quote = quotes !! (read x 
 
 main :: IO ()
 main = do
+  -- How do I print a prompt for each input?
+  -- putStrLn "Enter a number from 1-5 or n to quit: "
   input <- getContents
   mapM_ putStrLn (lookupQuote (lines input))

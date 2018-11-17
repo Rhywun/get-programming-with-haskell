@@ -6,8 +6,8 @@ import           System.Environment
 main :: IO ()
 main = do
   args <- getArgs
-  putStrLn "Args: "
-  mapM_ putStrLn args
+  -- putStrLn "Args: "
+  -- mapM_ putStrLn args
   let count = if not (null args) then read (head args) else 0
   numbers <- replicateM count getLine
   let ints = map read numbers :: [Int]

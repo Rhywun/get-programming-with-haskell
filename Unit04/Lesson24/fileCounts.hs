@@ -1,6 +1,8 @@
 import           System.Environment
 import           System.IO
 
+-- NOTE: this implementation is lazy & has issues
+
 {-
 getCounts "Hello, world!\nGood-bye, world!" -- (30, 4, 2)
 -}

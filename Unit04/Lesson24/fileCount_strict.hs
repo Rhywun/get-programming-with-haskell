@@ -5,12 +5,15 @@ import           System.IO
 import qualified Data.Text                     as T
 import qualified Data.Text.IO                  as TI
 
-
--- E.g. getCounts "Hello, world!\nGood-bye, world!" == (30, 4, 2)
+{-
+getCounts "Hello, world!\nGood-bye, world!" == (30, 4, 2)
+-}
 getCounts :: T.Text -> (Int, Int, Int)
 getCounts xs = (T.length xs, (length . T.words) xs, (length . T.lines) xs)
 
--- E.g. describeCounts (30, 4, 2) == "chars:  30  words:  4  lines:  2"
+{-
+describeCounts (30, 4, 2) == "chars:  30  words:  4  lines:  2"
+-}
 describeCounts :: (Int, Int, Int) -> T.Text
 describeCounts (cc, wc, lc) =
   T.pack (unwords ["chars: ", show cc, " words: ", show wc, " lines: ", show lc])

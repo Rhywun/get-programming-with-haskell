@@ -21,7 +21,7 @@ main2 = do
   line1     <- hGetLine inputFile
   putStrLn line1
   line2      <- hGetLine inputFile
-  outputFile <- openFile "goodbye.txt" WriteMode
+  outputFile <- openFile "goodbye.txt" AppendMode
   hPutStrLn outputFile line2
   hClose inputFile
   hClose outputFile
@@ -29,22 +29,20 @@ main2 = do
 
 main3 :: IO ()
 main3 = do
-  helloFile  <- openFile "hello.txt" ReadMode
-  eof        <- hIsEOF helloFile
-  firstLine  <- if not eof then hGetLine helloFile else return "empty"
+  helloFile <- openFile "hello1.txt" ReadMode
+  eof       <- hIsEOF helloFile
+  firstLine <- if not eof then hGetLine helloFile else return "empty"
+  putStrLn firstLine
   -- QC2
   eof        <- hIsEOF helloFile
   secondLine <- if not eof then hGetLine helloFile else return "no second line"
+  putStrLn secondLine
   putStrLn "done!"
 
 --
 -- Simple I/O tools
 -- See fileCounts.hs
 --
-
--- QC3
--- Because it's more convenient to input a list rather that apply ++ between each item.
--- Also, ++ is only defined for [Char], not Text.
 
 --
 -- The trouble with lazy I/O
@@ -65,6 +63,6 @@ main3 = do
 -- Q2
 -- See capitalize.hs
 
--- TODO - I'm still not clear on the difference between let= and <-
+-- FIXED - I'm still not clear on the difference between let= and <-
 --   ==> Use <- to assign a value of type IO a and let it behave like type a
 --       Use let= to assign a value that isn't an IO type

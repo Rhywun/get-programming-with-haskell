@@ -23,3 +23,4 @@ library
                    , random
                    , text
                    , split
+                   , bytestring

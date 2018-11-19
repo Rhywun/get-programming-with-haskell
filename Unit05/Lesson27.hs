@@ -11,6 +11,12 @@ printInt (Just val) = putStrLn val
 
 -- How do we convert a Maybe Int to Maybe String to pass into this function?
 
+intToStr :: Int -> String
+intToStr x = show (x * x) ++ "!"
+
+ct1 = fmap intToStr (Just 2) -- printInt ct1 -- 4!
+ct2 = fmap intToStr Nothing  -- printInt ct2 -- value missing
+
 --
 -- An example: computing in a Maybe
 --
@@ -69,8 +75,8 @@ failStr = show <$> failedRequest -- Nothing
 
 -- QC2
 
-e3 :: Maybe String
-e3 = reverse <$> Just "hello" -- Just "olleh"
+qc2 :: Maybe String
+qc2 = reverse <$> Just "hello" -- Just "olleh"
 
 --
 -- Functors are everywhere!
@@ -138,13 +144,15 @@ partsDB = Map.fromList keyVals
 -- Convert a Maybe RobotPart to Maybe Html
 
 partVal :: Maybe RobotPart
-partVal = Map.lookup 1 partsDB -- Just (RobotPart {name = "left arm", description = ...})
+partVal = Map.lookup 1 partsDB
+  -- Just (RobotPart {name = "left arm", description = ...})
 
 partVal' :: Maybe RobotPart
 partVal' = Map.lookup 999 partsDB -- Nothing
 
 partHtml :: Maybe Html
-partHtml = renderHtml <$> partVal -- Just "<h2>left arm</h2><p><h3>desc</h3>left arm ..."
+partHtml = renderHtml <$> partVal
+  -- Just "<h2>left arm</h2><p><h3>desc</h3>left arm ..."
 
 -- Convert a list of RobotPart to a list of Html
 

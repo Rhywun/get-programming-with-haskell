@@ -1,6 +1,6 @@
 module Robots where
 
-import qualified Data.Map   as Map
+import qualified Data.Map                      as Map
 
 data RobotPart = RobotPart
   { name        :: String
@@ -21,10 +21,10 @@ rightLeg = RobotPart "right leg" "right leg for dancing" 1119.99 2
 
 partsDB :: Map.Map Int RobotPart
 partsDB = Map.fromList keyVals
-  where
-    keys = [1, 2, 3, 4, 5]
-    vals = [leftArm, rightArm, robotHead, leftLeg, rightLeg]
-    keyVals = zip keys vals
+ where
+  keys    = [1, 2, 3, 4, 5]
+  vals    = [leftArm, rightArm, robotHead, leftLeg, rightLeg]
+  keyVals = zip keys vals
 
 getLowerCost :: Maybe RobotPart -> Maybe RobotPart -> Maybe Double
 getLowerCost p1 p2 = min <$> (cost <$> p1) <*> (cost <$> p2)
@@ -38,7 +38,7 @@ getLowerCost p1 p2 = min <$> (cost <$> p1) <*> (cost <$> p2)
 -}
 
 printLowerCost :: Maybe Double -> IO ()
-printLowerCost Nothing = putStrLn "At least one part not found."
+printLowerCost Nothing     = putStrLn "At least one part not found."
 printLowerCost (Just cost) = putStrLn (show cost ++ " is lower cost.")
 
 main :: IO ()

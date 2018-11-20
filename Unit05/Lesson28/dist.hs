@@ -57,14 +57,14 @@ addMaybe _        _        = Nothing
 distanceFromNY :: LatLong -> Double
 distanceFromNY = haversine (40.7776, -73.9691)
 
+--
+-- Using <*> for partial application in a context
+--
+
 -- Using Functor’s <$> operator for partial application in a context
 --   --> But this function can't be applied directly
 maybeInc :: Maybe (Integer -> Integer)
 maybeInc = (+) <$> Just 1
-
---
--- Using <*> for partial application in a context
---
 
 -- Applicative to the rescue
 {-

@@ -27,20 +27,20 @@ sue = User "Sue" 1337 9001
 
 -- Maybe context
 --
-serverUsername :: Maybe String
-serverUsername = Just "Sue"
+maybeUsername :: Maybe String
+maybeUsername = Just "Sue"
 
-serverGamerId :: Maybe Int
-serverGamerId = Just 1337
+maybeGamerId :: Maybe Int
+maybeGamerId = Just 1337
 
-serverScore :: Maybe Int
-serverScore = Just 9001
+maybeScore :: Maybe Int
+maybeScore = Just 9001
 
 {-
-serverSue -- Just (User {name = "Sue", gamerId = 1337, score = 9001})
+maybeSue -- Just (User {name = "Sue", gamerId = 1337, score = 9001})
 -}
-serverSue :: Maybe User
-serverSue = User <$> serverUsername <*> serverGamerId <*> serverScore
+maybeSue :: Maybe User
+maybeSue = User <$> maybeUsername <*> maybeGamerId <*> maybeScore
 
 -- IO context
 --

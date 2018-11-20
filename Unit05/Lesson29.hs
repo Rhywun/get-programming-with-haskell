@@ -47,6 +47,8 @@ boxPrize = [500, 20000]
 totalPrize :: [Int]
 totalPrize = pure (+) <*> doorPrize <*> boxPrize
 
+totalPrize' = (+) <$> doorPrize <*> boxPrize -- same as above
+
 -- QC4
 
 qc4 :: [Int]

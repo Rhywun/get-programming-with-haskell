@@ -2,6 +2,29 @@ module Lesson30 where
 
 import qualified Data.Map                      as Map
 
+-- A quick reminder of do-notation
+
+main1 :: IO ()
+main1 = do
+  putStrLn "Remember do-notation!"
+  putStrLn "It makes things easy!"
+
+-- Consider this
+
+-- How do we convert this to use `bind`?
+main2 :: IO ()
+main2 = do
+  input <- getLine
+  let output = (read input :: Int) * 2
+  print output
+
+-- Revisit:
+main2' :: IO ()
+-- main2' = getLine >>= \input -> read s >>=  putStrLn
+main2' = undefined
+
+-- QC3 shows one possible answer
+
 --
 -- The limitations of Applicative and Functor
 --
@@ -12,7 +35,7 @@ type UserName = String
 
 type GamerID = Int
 
-type PlayerCredits = Int
+type Credits = Int
 
 userNameDB :: Map.Map GamerID UserName
 userNameDB = Map.fromList
@@ -24,7 +47,7 @@ userNameDB = Map.fromList
   , (6, "yogSOThoth")
   ]
 
-creditsDB :: Map.Map UserName PlayerCredits
+creditsDB :: Map.Map UserName Credits
 creditsDB = Map.fromList
   [ ("nYarlathoTep", 2000)
   , ("KINGinYELLOW", 15000)
@@ -44,32 +67,38 @@ creditsFromId :: GamerId -> Maybe PlayerCredits
 lookupUserName :: GamerID -> Maybe UserName
 lookupUserName gamerID = Map.lookup gamerID userNameDB
 
-lookupCredits :: UserName -> Maybe PlayerCredits
+lookupCredits :: UserName -> Maybe Credits
 lookupCredits username = Map.lookup username creditsDB
 
 -- A function to connect these would look like this, concrete & generally:
 {-
-                 Maybe UserName -> (UserName -> Maybe PlayerCredits) -> Maybe PlayerCredits
-Applicative f => f     a        -> (a        -> f     b)             -> f     b
+                 Maybe UserName -> (UserName -> Maybe Credits) -> Maybe Credits
+Applicative f => f     a        -> (a        -> f     b)       -> f     b
 -}
 
 -- One way is to make a wrapper around the 2nd function:
-altLookupCredits :: Maybe UserName -> Maybe PlayerCredits
+altLookupCredits :: Maybe UserName -> Maybe Credits
 altLookupCredits Nothing         = Nothing
 altLookupCredits (Just username) = lookupCredits username
 
-creditsFromID :: GamerID -> Maybe PlayerCredits
+-- This works but is clumsy:
+{-
+creditsFromID 1  -- Just 2000
+creditsFromID 10 -- Nothing
+-}
+creditsFromID :: GamerID -> Maybe Credits
 creditsFromID gamerID = altLookupCredits (lookupUserName gamerID)
-
--- This works but is clumsy.
 
 -- QC1
 
-creditsFromIDStrange :: GamerID -> Maybe (Maybe PlayerCredits)
+-- It returns a nested Maybe:
+{-
+creditsFromIDStrange 1 -- Just (Just 2000)
+-}
+creditsFromIDStrange :: GamerID -> Maybe (Maybe Credits)
 creditsFromIDStrange gamerID = pure lookupCredits <*> lookupUserName gamerID
--- It returns a nested Maybe.
 
--- A not-so-trivial echo IO action
+-- Writing a not-so-trivial echo IO action
 
 -- We want this:
 {-
@@ -105,9 +134,10 @@ altPutStrLn = undefined -- ???
 -- Now we can solve the Maybe problem without the need for wrappers
 
 {-
-creditsFromID' 1 -- Just 2000
+creditsFromID' 1  -- Just 2000
+creditsFromID' 10 -- Nothing
 -}
-creditsFromID' :: GamerID -> Maybe PlayerCredits
+creditsFromID' :: GamerID -> Maybe Credits
 creditsFromID' gamerID = lookupUserName gamerID >>= lookupCredits
 
 -- And we can chain together another level of indirection
@@ -122,14 +152,14 @@ lookupGamerID :: WillCoID -> Maybe GamerID
 lookupGamerID willCoID = Map.lookup willCoID gamerIDDB
 
 {-
-creditsFromWillCoID  1001 -- Just 2000
-creditsFromWillCoID  100  -- Nothing
+creditsFromWillCoID 1001 -- Just 2000
+creditsFromWillCoID 100  -- Nothing
 -}
-creditsFromWillCoID :: WillCoID -> Maybe PlayerCredits
+creditsFromWillCoID :: WillCoID -> Maybe Credits
 creditsFromWillCoID willCoID =
   lookupGamerID willCoID >>= lookupUserName >>= lookupCredits
 
--- And we can solve the IO problem which was impossible before
+-- And we can solve the IO problem which was impossible before:
 
 echo :: IO ()
 echo = getLine >>= putStrLn
@@ -189,14 +219,20 @@ nameStatement name = "Hello, " ++ name ++ "!"
 -- 3. askForName >> getLine >>= (\name -> return (nameStatement name))
 
 -- QC4
--- (\x -> return ((+2) x))
+-- \x -> return ((+2) x)
 
 -- 4. Finally, pipe everything to putStrLn
 --    and apply hlint a few times to get something considerably shorter
 --    and not painful to look at
 
+{-
+helloName ⏎
+Name? Joe ⏎
+Hello, Joe!
+-}
 helloName :: IO ()
--- helloName = askForName >> getLine >>= (\name -> return (nameStatement name)) >>= putStrLn
+-- helloName = askForName >> getLine >>= (\name -> return (nameStatement name))
+--   >>= putStrLn
 helloName = (nameStatement <$> (askForName >> getLine)) >>= putStrLn
 
 -- Q1

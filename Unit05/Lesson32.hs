@@ -3,6 +3,10 @@ module Lesson32 where
 import           Control.Monad
 import           Data.Char
 
+-- Consider this:
+
+ct1 = [ x ^ 2 | x <- [1 .. 19], x `mod` 2 == 1 ] -- [1,9,25,49,81,121,169,225,289,361]
+
 --
 -- Building lists with the list monad
 --
@@ -46,14 +50,14 @@ allEvenOdds n = do
 -- QC1
 
 {-
-pairsOfSquares 10 -- [(1,1),(2,4),(3,9),(4,16),(5,25),(6,36),(7,49),(8,64),(9,81),(10,100)]
+pairsOfSquares 10 -- [(1,1),(2,4),(3,9),(4,16),...,(10,100)]
 -}
 pairsOfSquares :: Int -> [(Int, Int)]
 pairsOfSquares n = do
   n' <- [1 .. n]
   return (n', n' ^ (2 :: Int))
 
--- The `guard` function for filtering
+-- The `guard` function for filtering:
 
 evensGuard :: Int -> [Int]
 evensGuard n = do

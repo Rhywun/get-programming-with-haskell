@@ -2,6 +2,8 @@ module Lesson31 where
 
 import qualified Data.Map                      as Map
 
+-- Review:
+
 askForName :: IO ()
 askForName = putStrLn "What is your name?"
 
@@ -15,8 +17,12 @@ helloName = askForName >> getLine >>= (\name -> return (nameStatement name)) >>=
 
 -- Consider this:
 
+{-
 maxPairM :: (Monad m, Ord a) => m (a, a) -> m a
-maxPairM = undefined
+maxPairM f (x, y) = do
+  let z = max x y
+  return z
+-}
 
 --
 -- Do-notation revisited
@@ -182,7 +188,11 @@ assessCandidates candidates = map (\x -> if x then "passed" else "failed") passe
 --   2. a single candidate looked up in a Map (Maybe Candidate)
 --   3. a list of candidates ([Candidate])
 --   4. (some other Monad)
-
+{-
+assessCandidate readCandidate
+assessCandidate (Map.lookup 1 candidateDB)
+assessCandidate candidates
+-}
 assessCandidate :: Monad m => m Candidate -> m String
 assessCandidate candidates = do
   candidate <- candidates

@@ -51,8 +51,11 @@ _select f xs = f <$> xs
 -- WHERE
 --
 
--- E.g. _where (startsWith 'J' . firstName) students
--- _where :: (a -> Bool) -> [a] -> [a]
+{-
+_where (\x -> gradeLevel x == Senior) students
+_where (startsWith 'J' . firstName . studentName) students
+_where (startsWith 'J' . firstName) (_select studentName students)
+-}
 _where :: (Monad m, Alternative m) => (a -> Bool) -> m a -> m a
 _where p xs = do
   x <- xs
@@ -81,15 +84,16 @@ teachers =
   [Teacher 100 (Name "Simone" "De Beauvior"), Teacher 200 (Name "Susan" "Sontag")]
 
 data Course = Course
-  { courseId    :: Int
-  , courseTitle :: String
-  , teacher     :: Int
+  { courseId        :: Int
+  , courseTitle     :: String
+  , courseTeacherId :: Int
   } deriving (Show)
 
 courses = [Course 101 "French" 100, Course 201 "English" 200]
 
--- E.g. _join teachers courses teacherId teacher
--- _join :: Eq c => [a] -> [b] -> (a -> c) -> (b -> c) -> [(a, b)]
+{-
+_join teachers courses teacherId courseTeacher
+-}
 _join :: (Monad m, Alternative m, Eq c) => m a -> m b -> (a -> c) -> (b -> c) -> m (a, b)
 _join data1 data2 prop1 prop2 = do
   d1 <- data1
@@ -104,14 +108,14 @@ _join' data1 data2 prop1 prop2 =
   data1 >>= (\d1 -> data2 >>= (\d2 -> let dpairs = (d1, d2)) >>
     guard (prop1 (fst dpairs) == prop2 (snd dpairs)) >> return dpairs)
 -}
---
+
 --
 -- Building your HINQ interface and example queries
 --
---
+
 -- How to pleasantly combine these?
---
-joinData = _join teachers courses teacherId teacher
+
+joinData = _join teachers courses teacherId courseTeacherId
 
 whereResult = _where ((== "English") . courseTitle . snd) joinData
 
@@ -121,7 +125,7 @@ selectResult = _select (teacherName . fst) whereResult -- == [Susan Sontag]
 _hinq selectQuery joinQuery whereQuery = (selectQuery . whereQuery) joinQuery
 
 finalResult = _hinq (_select (teacherName . fst))
-                    (_join teachers courses teacherId teacher)
+                    (_join teachers courses teacherId courseTeacherId)
                     (_where ((== "English") . courseTitle . snd))
 
 -- What if we don't need a WHERE clause?
@@ -129,13 +133,12 @@ teacherFirstName = _hinq (_select firstName) finalResult (_where (const True))
   -- We can do better
 
 --
---
 -- Making a HINQ type for your queries
 --
---
+
 -- First, note the change to monoidal type signatures above
 -- on _select, _where, and _join
---
+
 data HINQ m a b
   = HINQ (m a -> m b) -- _select
          (m a) -- _join or data
@@ -154,7 +157,7 @@ runHINQ (HINQ_ sClause jClause       ) = _hinq sClause jClause (_where (const Tr
 -- E.g. runHINQ query1 == [Susan Sontag]
 query1 :: HINQ [] (Teacher, Course) Name
 query1 = HINQ (_select (teacherName . fst))
-              (_join teachers courses teacherId teacher)
+              (_join teachers courses teacherId courseTeacherId)
               (_where ((== "English") . courseTitle . snd))
 
 -- E.g. runHINQ query2 == [Simone De Beauvior,Susan Sontag]
@@ -172,7 +175,7 @@ possibleCourse = Just (head courses)
 -- E.g. runHINQ maybeQuery1 == Just Simone De Beauvior
 maybeQuery1 :: HINQ Maybe (Teacher, Course) Name
 maybeQuery1 = HINQ (_select (teacherName . fst))
-                   (_join possibleTeacher possibleCourse teacherId teacher)
+                   (_join possibleTeacher possibleCourse teacherId courseTeacherId)
                    (_where ((== "French") . courseTitle . snd))
 
 missingCourse :: Maybe Course
@@ -181,7 +184,7 @@ missingCourse = Nothing
 -- E.g. runHINQ maybeQuery2 == Nothing
 maybeQuery2 :: HINQ Maybe (Teacher, Course) Name
 maybeQuery2 = HINQ (_select (teacherName . fst))
-                   (_join possibleTeacher missingCourse teacherId teacher)
+                   (_join possibleTeacher missingCourse teacherId courseTeacherId)
                    (_where ((== "French") . courseTitle . snd))
 
 -- Enough!

@@ -2,6 +2,8 @@ module Lesson02 where
 
 simple x = x
 
+e1 = sqrt 4 -- 2.0 - Must be defined as the positive root only?
+
 y = 10
 -- y = 11 <- won't compile
 
@@ -18,7 +20,7 @@ doublePlusTwo x = doubleX + 2 where doubleX = x * 2
 -- QC4
 -- 6
 
--- Q0201
+-- Q1
 -- Because an if without an else would not return a value if the if branch
 -- evaluated to false.
 

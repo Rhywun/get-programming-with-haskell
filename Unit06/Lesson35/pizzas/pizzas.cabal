@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a4759456f9073555eb3e0be0523db32089711811e717ce56c15ad10cb47fef8c
+-- hash: 848315f6873f22bfa8d256bea6a50c526bf0ad8fcb70f89f98a9ed48a73e52d1
 
 name:           pizzas
 version:        0.1.0.0
@@ -15,10 +17,9 @@ copyright:      Patrick Huffer
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-cabal-version:  >= 1.10
 extra-source-files:
-    ChangeLog.md
     README.md
+    ChangeLog.md
 
 source-repository head
   type: git

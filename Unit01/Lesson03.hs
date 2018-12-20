@@ -8,8 +8,10 @@ lf1 = (\x -> x) 4 -- 4
 lf2 = (\x -> x) [1, 2, 3] -- [1,2,3]
 
 -- QC1
+
 qc11 = (\x -> 2 * x) 4 -- 8
 qc12 = (\x -> 2 * x) 5 -- 10
+qc13 = (\x -> 2 * x) 6 -- 12
 
 --
 -- Writing your own where clause
@@ -64,17 +66,19 @@ sumSquareOrSquareSum''' x y =
   in  if sumSquare > squareSum then sumSquare else squareSum
 
 overwrite x = let x = 2 in let x = 3 in let x = 4 in x
+  -- But... is this really overwriting?
+  -- Seems to me like those x's are in different scopes, or...?
 
--- QC0303
+-- QC3
 overwrite' x = (\x -> (\x -> (\x -> x) 4) 3) 2
 
 --
 -- Practical lambda functions and lexical scope
 --
 
-x1 = 4
+x = 4
 
-add1 y = y + x1                       -- x is bound to top-level x
+add1 y = y + x                        -- x is bound to top-level x
                                       -- y is bound to argument y
 
 add2 y = (\x -> y + x) 3              -- x is bound to lambda argument x
@@ -91,6 +95,12 @@ doubleDouble'' = \x -> (\dubs -> dubs * 2) x * 2
 
 -- Q2
 
-counter x = let x = x + 1 in let x = x + 1 in x
+{-
+counter1 4 -- hangs
+-}
+counter1 x = let x = x + 1 in let x = x + 1 in x
 
-counter' x = (\x -> x + 1) ((\x -> x + 1) x)
+{-
+counter2 4 = 6
+-}
+counter2 x = (\x -> x + 1) ((\x -> x + 1) x)

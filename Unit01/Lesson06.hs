@@ -3,6 +3,15 @@ module Lesson06 where
 import           Data.List
 
 --
+-- Consider this
+--
+
+teams = ["red", "yellow", "orange", "blue", "purple"]
+
+-- Use `cycle` and `zip` to assign these to a list of employees -
+-- see `assignToGroups` below
+
+--
 -- Lists and lazy evaluation
 --
 
@@ -49,6 +58,7 @@ ones 5 -- [1,1,1,1,1]
 ones n = take n (cycle [1])
 
 assignToGroups n = zip groups where groups = cycle [1 .. n]
+  -- This works because `zip` stops `cycle` when one list becomes empty
 
 threeGroups = assignToGroups
   3
@@ -62,6 +72,10 @@ threeGroups = assignToGroups
   , "file8.txt"
   ] -- [(1,"file1.txt"),(2,"file2.txt"),(3,"file3.txt"),
     --  (1,"file4.txt"),(2,"file5.txt"),(3,"file6.txt"), etc.]
+
+--
+-- Summary
+--
 
 -- Q1
 

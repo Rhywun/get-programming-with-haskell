@@ -124,6 +124,10 @@ addressLetter' ("Joe","Blow") "la"   -- "Joe Blow"
 -}
 addressLetter' name location = getLocationFunction location name
 
+--
+-- Summary
+--
+
 -- Q1
 
 compareLastNames'' name1 name2 | compareLastNames''' == EQ = compare firstName1 firstName2

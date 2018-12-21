@@ -20,6 +20,10 @@ doublePlusTwo x = doubleX + 2 where doubleX = x * 2
 -- QC4
 -- 6
 
+--
+-- Summary
+--
+
 -- Q1
 -- Because an if without an else would not return a value if the if branch
 -- evaluated to false.

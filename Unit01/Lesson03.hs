@@ -88,6 +88,10 @@ add3 y = (\y -> (\x -> y + x) 1) 2    -- x is bound to lambda argument x
                                       -- y is bound to lambda argument y,
                                       --   function argument is ignored
 
+--
+-- Summary
+--
+
 -- Q1
 
 -- doubleDouble' x = (\dubs -> dubs * 2) x * 2

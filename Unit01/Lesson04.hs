@@ -7,6 +7,9 @@ import           Data.Ord
 -- Consider this
 --
 
+-- Note: To test myself, I'm attempting to answer the "Consider this" sections
+-- upon revisiting each chapter, using what I recall from previous experience
+
 getPrice :: (String -> String) -> String -> Float
 getPrice extractPrice url = parseString $ extractPrice url
 

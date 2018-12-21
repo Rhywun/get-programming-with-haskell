@@ -4,6 +4,16 @@ import           Data.List
 import           Data.Ord
 
 --
+-- Consider this
+--
+
+getPrice :: (String -> String) -> String -> Float
+getPrice extractPrice url = parseString $ extractPrice url
+
+parseString :: String -> Float
+parseString = undefined
+
+--
 -- Functions as arguments
 --
 
@@ -35,24 +45,23 @@ qc1 = ifEven (\x -> x ^ 3) 2 -- 8
 -- Example - custom sorting
 
 newOrder =
-  [ ("Ian"    , "Curtis")
-  , ("Bernard", "Sumner")
-  , ("Peter"  , "Hook")
-  , ("Stephen", "Morris")
-  ]
+  [("Ian", "Curtis"), ("Bernard", "Sumner"), ("Peter", "Hook"), ("Stephen", "Morris")]
 
-e3 = sort newOrder -- <sorts by first name>
+e3 = sort newOrder
+  -- [("Bernard","Sumner"),("Ian","Curtis"),("Peter","Hook"),("Stephen","Morris")]
 
-compareLastNames name1 name2 = if lastName1 > lastName2
-  then GT
-  else if lastName1 < lastName2 then LT else EQ
+compareLastNames name1 name2 | lastName1 > lastName2 = GT
+                             | lastName1 < lastName2 = LT
+                             | otherwise             = EQ
  where
   lastName1 = snd name1
   lastName2 = snd name2
 
-e4 = sortBy compareLastNames newOrder -- <sorts by last name>
+e4 = sortBy compareLastNames newOrder
+  -- [("Ian","Curtis"),("Peter","Hook"),("Stephen","Morris"),("Bernard","Sumner")]
 
 -- I can do better:
+
 e5 = sortBy (\(_, b) (_, b') -> compare b b') newOrder
 e6 = sortBy (comparing snd) newOrder
 e7 = sortOn snd newOrder
@@ -75,6 +84,7 @@ compareLastNames' name1 name2 | lastName1 > lastName2   = GT
 qc2 = sortBy compareLastNames' names'
 
 -- I can do better here too:
+
 e8 = sortBy (\x y -> mconcat [comparing snd x y, comparing fst x y]) names' -- Nice!
 
 --
@@ -86,7 +96,7 @@ addressLetter name location = nameText ++ " - " ++ location
 
 --
 
--- San Francisco has a new address for last names beginning with "L":
+-- San Francisco has a new address for last names beginning with "L" or later:
 sfOffice name = if lastName < "L"
   then nameText ++ " - PO Box 1234 - San Francisco, CA 94111"
   else nameText ++ " - PO Box 1010 - San Francisco, CA 94109"
@@ -99,8 +109,7 @@ nyOffice name = nameText ++ ": PO Box 789 - New York, NY 10013"
   where nameText = fst name ++ " " ++ snd name
 
 -- Reno only wants the last names:
-renoOffice name = nameText ++ " - PO Box 456 - Reno, NV 89523"
-  where nameText = snd name
+renoOffice name = nameText ++ " - PO Box 456 - Reno, NV 89523" where nameText = snd name
 
 -- Return the correct function for the specified location
 getLocationFunction location = case location of
@@ -109,15 +118,16 @@ getLocationFunction location = case location of
   "reno" -> renoOffice
   _      -> \name -> fst name ++ " " ++ snd name
 
--- E.g. addressLetter' ("Bob", "Smith") "ny" == "Bob Smith: PO Box 789 - New York, NY, 10013"
---      addressLetter' ("Joe","Blow") "la" == "Joe Blow"
+{-
+addressLetter' ("Bob", "Smith") "ny" -- "Bob Smith: PO Box 789 - New York, NY, 10013"
+addressLetter' ("Joe","Blow") "la"   -- "Joe Blow"
+-}
 addressLetter' name location = getLocationFunction location name
 
 -- Q1
 
-compareLastNames'' name1 name2
-  | compareLastNames''' == EQ = compare firstName1 firstName2
-  | otherwise                 = compareLastNames'''
+compareLastNames'' name1 name2 | compareLastNames''' == EQ = compare firstName1 firstName2
+                               | otherwise                 = compareLastNames'''
  where
   lastName1           = snd name1
   lastName2           = snd name2
@@ -128,7 +138,7 @@ compareLastNames'' name1 name2
 -- Q2
 
 dcOffice name = nameText ++ " - PO Box 333 - Washington, DC 20202"
-  where nameText = fst name ++ " " ++ snd name ++ " , Esq."
+  where nameText = fst name ++ " " ++ snd name ++ ", Esq."
 
 getLocationFunction' location = case location of
   "ny"   -> nyOffice
@@ -137,4 +147,8 @@ getLocationFunction' location = case location of
   "dc"   -> dcOffice
   _      -> \name -> fst name ++ " " ++ snd name
 
+{-
+addressLetter'' ("Peter", "Parker") "dc"
+  -- "Peter Parker, Esq. - PO Box 333 - Washington, DC 20202"
+-}
 addressLetter'' name location = getLocationFunction' location name

@@ -1,14 +1,23 @@
 module Lesson07 where
 
 --
+-- Consider this
+--
+
+{-
+take' 3 [1,2,3,4] -- [1,2,3]
+-}
+take' 0 xs       = []
+take' n (x : xs) = x : take' (n - 1) xs
+
+--
 -- Your first recursive function: greatest common divisor
 --
 
 {-
 gcd' 20 16 -- 4
 -}
-gcd' a b = if remainder == 0 then b else gcd' b remainder
-  where remainder = a `mod` b
+gcd' a b = if remainder == 0 then b else gcd' b remainder where remainder = a `mod` b
 
 -- QC2
 -- No:
@@ -41,6 +50,10 @@ head' []       = errorWithoutStackTrace "empty list"
 tail' [1,2,3] -- [2,3]
 -}
 tail' (_ : xs) = xs
+
+--
+-- Summary
+--
 
 -- Q1
 

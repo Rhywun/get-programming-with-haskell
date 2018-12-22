@@ -3,14 +3,47 @@ module Lesson09 where
 import           Data.Char
 
 --
+-- Consider this
+--
+
+add3ToAll []       = []
+add3ToAll (x : xs) = (3 + x) : add3ToAll xs
+
+mul3ByAll []       = []
+mul3ByAll (x : xs) = (3 * x) : mul3ByAll xs
+
+-- Looks like a job for `map`:
+
+{-
+add3ToAll' [1,2,3] -- [4,5,6]
+-}
+add3ToAll' = map (3 +)
+
+{-
+mul3ByAll' [1,2,3] -- [3,6,9]
+-}
+mul3ByAll' = map (3 *)
+
+--
 -- Using map
 --
 
--- Add the indefinite article to the beginning of each word
+-- Add the definite article to the beginning of each word
 {-
-determine ["dog","cat","moose"] == ["a dog","a cat","a moose"]
+determine ["dog","cat","moose"] -- ["the dog","the cat","the moose"]
 -}
-determine = map ("a " ++)
+determine = map ("the " ++)
+
+-- Q: How to use the indefinite article, which varies between "a" and "an"?
+
+aOrAn xs | head xs `elem` "aeiou" = "an "
+         | otherwise              = "a "
+
+animals = ["ant", "bat", "cat"]
+
+-- This doesn't work:
+determine' = map (\xs -> aOrAn xs) -- ++
+-- TODO: Giving up, return later?
 
 --
 -- Abstracting away recursion with map
@@ -59,6 +92,8 @@ product' [2, 3, 4, 5] -- 120
 -}
 product' xs = foldl (*) 1 xs
 
+--
+
 {-
 concat' ["race", "car"] -- racecar
 -}
@@ -76,19 +111,23 @@ reverse' xs = foldl (\x y -> y : x) [] xs
 
 -- Implementing folds
 
+-- foldl
+
 foldl' f z []       = z
 foldl' f z (x : xs) = foldl' f (f z x) xs
 
 -- QC3
 -- True, because you take the tail of the list on each recursion.
 
+-- foldr
+
 foldr' f z []       = z
-foldr' f z (x : xs) = f x (foldr f z xs)
+foldr' f z (x : xs) = f x (foldr' f z xs)
 
 -- foldl and foldr give different answers when f is not commutative (such as subtraction):
 
-f1 = foldl (+) 0 [1,2,3,4] == foldr (+) 0 [1,2,3,4] -- True
-f2 = foldl (-) 0 [1,2,3,4] == foldr (-) 0 [1,2,3,4] -- False
+f1 = foldl (+) 0 [1, 2, 3, 4] == foldr (+) 0 [1, 2, 3, 4] -- True
+f2 = foldl (-) 0 [1, 2, 3, 4] == foldr (-) 0 [1, 2, 3, 4] -- False
 
 -- Q1
 
@@ -100,10 +139,9 @@ elem' a xs = length (filter (== a) xs) > 0
 -- Q2
 
 {-
-isPalindrome "A man a plan a calal Panama"
+isPalindrome "A man a plan a canal Panama" -- True
 -}
-isPalindrome xs = xs' == reverse xs'
-  where xs' = map toUpper $ filter (/= ' ') xs
+isPalindrome xs = xs' == reverse xs' where xs' = map toUpper $ filter (/= ' ') xs
 
 -- Q3
 -- Cheat!

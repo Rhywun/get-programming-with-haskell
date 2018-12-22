@@ -1,6 +1,16 @@
 module Lesson08 where
 
 --
+-- Consider this
+--
+
+{-
+drop' 3 [1,2,3,4] -- 4
+-}
+drop' 0 xs       = xs
+drop' n (x : xs) = drop' (n - 1) xs
+
+--
 -- Recursion on lists
 --
 
@@ -24,6 +34,7 @@ length'' (x : xs) = 1 + length' xs
 
 {-
 take' 3 "hello" -- "hel"
+take' 5 []      -- []
 -}
 take' _ []       = []
 take' 0 _        = []
@@ -36,6 +47,21 @@ take' 10 (cycle' "heh") -- "hehhehhehh"
 -}
 cycle' (x : xs) = x : cycle' (xs ++ [x])
 
+-- repeat
+
+{-
+take' 4 (repeat' "heh") -- ["heh","heh","heh","heh"]
+-}
+repeat' x = x : repeat' x
+
+-- replicate
+
+{-
+replicate' 4 "heh" -- ["heh","heh","heh","heh"]
+-}
+replicate' 0 _ = []
+replicate' n x = x : replicate' (n - 1) x
+
 --
 -- Pathological recursion: Ackerman function and the Collatz conjecture
 --
@@ -45,6 +71,8 @@ cycle' (x : xs) = x : cycle' (xs ++ [x])
 ackermann 3 3 -- 61, 0.00 secs
 ackermann 3 8 -- 2045, 1.51 secs
 ackermann 3 9 -- 4093, 6.08 secs        <-- Ouch, seriously slow!
+ackermann 4 2 -- don't even bother - the answer has 19,729 digits!
+:unset +s
 -}
 ackermann 0 n = n + 1
 ackermann m 0 = ackermann (m - 1) 1
@@ -61,6 +89,12 @@ map collatz [100..110] -- [26,26,26,88,13,39,13,101,114,114,114]
 -}
 collatz 1 = 1
 collatz n = if even n then 1 + collatz (n `div` 2) else 1 + collatz (n * 3 + 1)
+
+-- I prefer using guards here:
+
+collatz' 1 = 1
+collatz' n | even n    = 1 + collatz' (n `div` 2)
+           | otherwise = 1 + collatz' (n * 3 + 1)
 
 --
 -- Summary

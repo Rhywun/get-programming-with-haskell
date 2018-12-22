@@ -9,6 +9,7 @@ take' 3 [1,2,3,4] -- [1,2,3]
 -}
 take' 0 xs       = []
 take' n (x : xs) = x : take' (n - 1) xs
+  -- Note: this is not complete - see next lesson
 
 --
 -- Your first recursive function: greatest common divisor

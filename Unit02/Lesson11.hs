@@ -1,21 +1,30 @@
 module Lesson11 where
 
+--
 -- Consider this:
+--
 
--- Why doesn't this work?
+-- Q: Why doesn't this work?
+-- average' xs = sum xs / length xs
+--  -> "Could not deduce (Fractional Int) arising from a use of ‘/’"
+
+-- A: Because `/` expects a Fractional while `length` produces an Int
+--  -> Use `fromIntegral` to convert the result of `length` to a Num
+--     which can be used with `/`
 {-
-average' xs = sum xs / length xs
+average' [2,3,4] -- 3.0
 -}
+average' xs = sum xs / fromIntegral (length xs)
 
 --
 -- Types in Haskell
 --
 
-x' :: Int
-x' = 2
+x :: Int
+x = 2
 
-y' :: Integer
-y' = 2
+y :: Integer
+y = 2
 
 -- Difference between Int and Integer?
 {-
@@ -87,7 +96,7 @@ printDouble n = show (n * 2)
 -- read - usually requires a type annotation
 
 anotherNumber :: Double
-anotherNumber = read "6"
+anotherNumber = read "6" -- 6.0
 
 -- can also put the type at the end:
 {-
@@ -95,18 +104,28 @@ read "6" :: Int    -- 6
 read "6" :: Double -- 6.0
 -}
 
--- multiple arguments
+-- Functions with multiple arguments
 
+{-
+makeAddress 123 "Happy St." "Haskell Town" -- (123,"Happy St.","Haskell Town")
+-}
 makeAddress :: Int -> String -> String -> (Int, String, String)
 makeAddress number street town = (number, street, town)
 
--- QC3
+-- Equivalent:
+{-
+(((makeAddressLambda 123) "Happy St.") "Haskell Town") -- (123,"Happy St.","Haskell Town")
+(((makeAddress 123) "Happy St.") "Haskell Town")       -- (123,"Happy St.","Haskell Town")
+-}
+makeAddressLambda :: Int -> String -> String -> (Int, String, String)
+makeAddressLambda = (\number -> (\street -> (\town -> (number, street, town))))
 
+-- QC3
 makeAddress' = makeAddress 123 :: String -> String -> (Int, String, String)
 makeAddress'' = makeAddress 123 "Main" :: String -> (Int, String, String)
 makeAddress''' = makeAddress 123 "Main" "Rochester" :: (Int, String, String)
 
--- function as argument
+-- Types for first-class functions
 
 ifEven :: (Int -> Int) -> Int -> Int
 ifEven f n = if even n then f n else n

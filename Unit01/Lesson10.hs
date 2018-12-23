@@ -58,11 +58,18 @@ nicerRobot = setName killerRobot "kitty"
 gentlerRobot = setAttack killerRobot 5
 softerRobot = setHP killerRobot 50
 
+{-
+printRobot nicerRobot -- "kitty attack:25 hp:200"
+-}
 printRobot aRobot =
   aRobot (\(n, a, h) -> n ++ " attack:" ++ show a ++ " hp:" ++ show h)
 
 damage aRobot attackDamage =
   aRobot (\(n, a, h) -> robot (n, a, h - attackDamage))
+
+hps = map getHP [nicerRobot, gentlerRobot, softerRobot] -- [200,200,50]
+
+--
 
 fight aRobot defender = damage defender attack
   where attack = if getHP aRobot > 10 then getAttack aRobot else 0

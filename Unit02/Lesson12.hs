@@ -1,10 +1,32 @@
 module Lesson12 where
 
+--
 -- Consider this
+--
 
 -- Is there a better way to express this?
 anAlbum :: (String, String, Int, [String])
 anAlbum = ("New Order", "Movement", 1981, ["Dreams Never End", "Truth", "Senses", "etc"])
+
+-- Sure - create a record:
+data Album = Album
+  { artist :: String
+  , name   :: String
+  , year   :: Int
+  , tracks :: [String]
+  }
+
+anAlbum' =
+  Album "New Order" "Movement" 1981 ["Deams Never End", "Truth", "Senses", "etc"]
+-- or
+anAlbum'' = Album { artist = "New Order"
+                  , name   = "Movement"
+                  , year   = 1981
+                  , tracks = ["Deams Never End", "Truth", "Senses", "etc"]
+                  }
+
+-- Accessing fields:
+albumName = name anAlbum'' -- "Movement"
 
 --
 -- Using type synonyms
@@ -53,6 +75,8 @@ sexInitial :: Sex -> Char
 sexInitial Male   = 'M'
 sexInitial Female = 'F'
 
+--
+
 data RhType = Pos | Neg
 
 -- jumping ahead...
@@ -95,7 +119,7 @@ data Name = Name FirstName LastName | NameWithMiddle FirstName MiddleName LastNa
 
 -- jumping ahead...
 instance Show Name where
-  show (Name f l)             = f ++ " " ++ l
+  show (Name f l            ) = f ++ " " ++ l
   show (NameWithMiddle f m l) = f ++ " " ++ m ++ " " ++ l
 
 name1 :: Name
@@ -137,18 +161,17 @@ data Patient = Patient
   , patientHeight    :: Height -- in inches
   , patientWeight    :: Weight -- in pounds
   , patientBloodType :: BloodType
-  }
+  } deriving (Show)
 
 -- the order of the fields doesn't matter:
 jackieSmith :: Patient
-jackieSmith = Patient
-  { patientName      = Name "Jackie" "Smith"
-  , patientAge       = 43
-  , patientSex       = Female
-  , patientHeight    = 62
-  , patientWeight    = 115
-  , patientBloodType = BloodType O Neg
-  }
+jackieSmith = Patient { patientName      = Name "Jackie" "Smith"
+                      , patientAge       = 43
+                      , patientSex       = Female
+                      , patientHeight    = 62
+                      , patientWeight    = 115
+                      , patientBloodType = BloodType O Neg
+                      }
 
 -- free getters:
 {-
@@ -164,6 +187,10 @@ qc3 = patientName jackieSmith
 -- Record update:
 jackieSmithUpdated :: Patient
 jackieSmithUpdated = jackieSmith { patientAge = 44 }
+
+--
+-- Summary
+--
 
 -- Q1
 

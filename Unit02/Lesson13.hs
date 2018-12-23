@@ -1,6 +1,17 @@
 module Lesson13 where
 
 --
+-- Consider this
+--
+
+{-
+inc' 1   -- 2
+inc' 1.1 -- 2.1
+-}
+inc' :: Num a => a -> a
+inc' x = x + 1
+
+--
 -- Further exploring types
 --
 
@@ -60,9 +71,8 @@ data IceCream = Chocolate | Vanilla deriving (Show, Eq, Ord)
 
 -- QC3
 
--- Now I can say that Vanilla is better than chocolate:
-dt1 :: Bool
-dt1 = Vanilla > Chocolate -- True
+-- Vanilla is greater than Chocolate because it appears last in the definition:
+qc3 = Vanilla > Chocolate -- True
 
 --
 -- Summary
@@ -73,8 +83,8 @@ dt1 = Vanilla > Chocolate -- True
 
 -- Q2
 
-inc :: Int -> Int
-inc x = x + 1
+inc'' :: Int -> Int
+inc'' x = x + 1
 
 -- `succ` doesn't work at bounds:
 {-

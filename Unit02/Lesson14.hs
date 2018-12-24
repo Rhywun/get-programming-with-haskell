@@ -1,16 +1,22 @@
 module Lesson14 where
 
+import           Data.List
+import           Data.Ord
+
+--
 -- Consider this
+--
 
 data NewEngland = CT | MA | ME | NH | RI | VT
 
 instance Show NewEngland where
-  show x = case x of CT -> "Connecticut"
-                     MA -> "Massachussetts"
-                     ME -> "Maine"
-                     NH -> "New Hampshire"
-                     RI -> "Rhode Island"
-                     VT -> "Vermont"
+  show x = case x of
+    CT -> "Connecticut"
+    MA -> "Massachussetts"
+    ME -> "Maine"
+    NH -> "New Hampshire"
+    RI -> "Rhode Island"
+    VT -> "Vermont"
 
 --
 -- A type in need of classes
@@ -52,7 +58,7 @@ instance Eq SixSidedDie' where
   (==) S3' S3' = True
   (==) S2' S2' = True
   (==) S1' S1' = True
-  (==) _ _   = False
+  (==) _   _   = False
 
 -- Of course, this is the same as deriving (Eq)
 
@@ -66,11 +72,11 @@ instance Eq SixSidedDie' where
 instance Ord SixSidedDie' where
   compare S6' S6' = EQ
   compare S6' _   = GT
-  compare _ S6'   = LT
+  compare _   S6' = LT
   compare S5' S5' = EQ
   compare S5' _   = GT
-  compare _ S5'   = LT
-  compare _ _   = undefined -- added to let it compile; in reality
+  compare _   S5' = LT
+  compare _   _   = undefined -- added to let it compile; in reality
                             -- this needs many more cases
 
 --
@@ -93,18 +99,35 @@ data SixSidedDie = S1 | S2 | S3 | S4 | S5 | S6 deriving (Show, Eq, Ord, Enum)
 -- See p. 153 for discussion of `newtype`
 newtype Name = Name (String, String) deriving (Show, Eq)
 
-names :: [Name]
-names =
-  [Name ("Emil", "Cioran"), Name ("Eugene", "Thacker"), Name ("Friedrich", "Nietzsche")]
-
--- Sort by last name:
+-- Implement a custom sort order:
 instance Ord Name where
   compare (Name (f1, l1)) (Name (f2, l2)) = compare (l1, f1) (l2, f2)
 
 {-
-Data.List.sort names
+sort names
   -- [Name ("Emil","Cioran"),Name ("Friedrich","Nietzsche"),Name ("Eugene","Thacker")]
 -}
+names =
+  [Name ("Emil", "Cioran"), Name ("Eugene", "Thacker"), Name ("Friedrich", "Nietzsche")]
+
+-- A thought: this would probably be nicer with record syntax. Let's try it.
+
+data NameRec = NameRec
+  { firstName :: String
+  , lastName  :: String
+  } deriving (Show, Eq)
+
+instance Ord NameRec where
+  compare = comparing lastName -- <- Nice
+
+{-
+sort namesRec
+  -- [NameRec {firstName = "Emil",      lastName = "Cioran"}
+     ,NameRec {firstName = "Friedrich", lastName = "Nietzsche"}
+     ,NameRec {firstName = "Eugene",    lastName = "Thacker"}]
+-}
+namesRec =
+  [NameRec "Emil" "Cioran", NameRec "Eugene" "Thacker", NameRec "Friedrich" "Nietzsche"]
 
 --
 -- Summary

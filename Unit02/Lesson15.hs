@@ -4,7 +4,7 @@ module Lesson15 where
 --  Ciphers for beginners: ROT13
 --
 
-data FourLetterAlphabet = L1 | L2 | L3 | L4 deriving (Eq, Show, Enum, Bounded)
+data FourLetterAlphabet = L1 | L2 | L3 | L4 deriving (Show, Enum, Bounded)
 
 -- Rotate an enum `enum` halfway around an alphabet of size `size`
 {-
@@ -22,7 +22,9 @@ rotN size enum = toEnum rotation   -- E.g. L2
 rotChar 'A' -- '\557121'
 -}
 rotChar :: Char -> Char
-rotChar = rotN size where size = 1 + fromEnum (maxBound :: Char)
+rotChar = rotN $ 1 + fromEnum (maxBound :: Char)
+
+--
 
 message :: [FourLetterAlphabet]
 message = [L1, L3, L4, L1, L1, L2]
@@ -36,6 +38,8 @@ fourLetterEncoder = map rot4l
  where
   alphaSize = 1 + fromEnum (maxBound :: FourLetterAlphabet)
   rot4l     = rotN alphaSize
+
+-- snip --
 
 --
 -- XOR: The magic of cryptography!

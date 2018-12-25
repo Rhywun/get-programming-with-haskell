@@ -2,7 +2,7 @@ name:                get-programming-with-haskell
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/rhywun/programming-in-haskell#readme
+homepage:            https://github.com/rhywun/programming-with-haskell#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Patrick Huffer

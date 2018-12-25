@@ -1,5 +1,18 @@
 module Lesson34 where
 
+--
+-- Consider this
+--
+
+-- Put Book and Magazine in separate files/modules, then use import qualified to
+-- import them into your main file, e.g.:
+{-
+import qualified Book as B
+import qualified Magazine as M
+-}
+
+--
+
 {-
 head :: [a] -> a
 head (x:_) = x
@@ -30,3 +43,5 @@ qc1 = Lesson34.length * 2 -- 16
 -- Q1
 -- see Main.hs and Palindrome.hs
 --
+-- Q2
+-- skip --

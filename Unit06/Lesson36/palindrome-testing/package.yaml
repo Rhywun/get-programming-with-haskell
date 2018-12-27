@@ -24,6 +24,8 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+  - text
 
 executables:
   palindrome-testing-exe:
@@ -46,3 +48,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - palindrome-testing
+    - QuickCheck
+    - quickcheck-instances
+    - text

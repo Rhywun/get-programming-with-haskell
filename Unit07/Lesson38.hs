@@ -24,6 +24,8 @@ myTakePM n (x : xs) = x : myTakePM (n - 1) xs
 -- QC1
 -- myTakePM _ []       = []
 
+--
+
 -- Throwing an error - bad practice, because just like above the compiler can't warn you
 myHead :: [a] -> a
 myHead []      = errorWithoutStackTrace "empty list"
@@ -57,6 +59,14 @@ maybeHead (x : _) = Just x
 myTakeSafer :: Int -> Maybe [a] -> Maybe [a]
 myTakeSafer 0 _         = Just []
 myTakeSafer n (Just xs) = (:) <$> maybeHead xs <*> myTakeSafer (n - 1) (Just (tail xs))
+
+-- NOTE: See the `Safe` module for an extensive list of functions like these! E.g.:
+{-
+> import Safe
+tailMay []          -- Nothing
+tailSafe []         -- []
+tailNote "uh oh" [] -- *** Exception: Safe.tailNote [], uh oh
+-}
 
 --
 -- Introducing the Either type

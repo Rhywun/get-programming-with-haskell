@@ -11,12 +11,16 @@ import           Network.HTTP.Types.Status
 import           Control.Monad.IO.Class         ( MonadIO )
 
 -- QC2
+-- NOTE: Bug in the book - `getResponseHeader` should be `getResponseHeaders`
+--                                                                         ^
 
 response :: MonadIO m => m (Response LC.ByteString)
 response = httpLBS "http://news.ycombinator.com"
 
 qc2 :: MonadIO f => f [(HeaderName, BC.ByteString)]
 qc2 = getResponseHeaders <$> response
+
+-- `getResponseHeader` requires a HeaderName parameter:
 
 mainQC2 :: IO ()
 mainQC2 = do
@@ -25,7 +29,7 @@ mainQC2 = do
   -- prints ["nginx"]
 
 --
--- Making a (more complicated) HTTP request
+-- Making an HTTP request
 --
 
 myToken = "WkWRfDFnAuVytwSTBPTohnvHkcfXuAHx" :: BC.ByteString
@@ -78,4 +82,4 @@ main = do
       putStrLn "Saving request to file..."
       let jsonBody = getResponseBody response
       L.writeFile "data.json" jsonBody
-    else print $ statusMessage status
+    else print $ statusMessage status -- <- Q2

@@ -19,6 +19,9 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on Github at <https://github.com/Rhywun/http-lesson#readme>
 
+default-extensions:
+- OverloadedStrings
+
 dependencies:
 - base >= 4.7 && < 5
 
@@ -35,6 +38,9 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - http-lesson
+    - bytestring
+    - http-conduit
+    - http-types
 
 tests:
   http-lesson-test:

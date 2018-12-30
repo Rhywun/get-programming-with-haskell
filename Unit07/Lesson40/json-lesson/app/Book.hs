@@ -21,25 +21,31 @@ instance ToJSON Book
 
 myBook = Book {title = "Will Kurt", author = "Learn Haskell", year = 2017}
 
--- "{\"year\":2017,\"author\":\"Learn Haskell\",\"title\":\"Will Kurt\"}"
+myBookJSON :: BC.ByteString
 myBookJSON = encode myBook
+  -- "{\"year\":2017,\"author\":\"Learn Haskell\",\"title\":\"Will Kurt\"}"
+
+e1 :: Maybe Book
+e1 = decode myBookJSON
+  -- Just (Book {title = "Will Kurt", author = "Learn Haskell", year = 2017})
 
 rawJSON :: BC.ByteString
 rawJSON =
   "{\"year\":1949,\"author\":\"Emil Ciroan\",\"title\":\"A Short History of Decay\"}"
 
--- Just Book {title = "A Short History of Decay", author = "Emil Ciroan", year = 1949})
-bookFromJSON = decode rawJSON :: Maybe Book
+bookFromJSON :: Maybe Book
+bookFromJSON = decode rawJSON
+  -- Just Book {title = "A Short History of Decay", author = "Emil Ciroan", year = 1949})
 
 wrongJSON :: BC.ByteString
 wrongJSON =
   "{\"year\":1949,\"writer\":\"Emil Ciroan\",\"title\":\"A Short History of Decay\"}"
 
--- Nothing
 bookFromWrongJSON = decode wrongJSON :: Maybe Book
+  -- Nothing
 
--- Left "Error in $: key \"author\" not present"
 bookFromWrongJSON' = eitherDecode wrongJSON :: Either String Book
+  -- Left "Error in $: key \"author\" not present"
 
 -- QC2
 

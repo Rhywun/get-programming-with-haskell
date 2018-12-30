@@ -8,7 +8,8 @@ import           GHC.Generics
 
 -- Suppose we are given this JSON
 
-sampleError = "{\"message\":\"oops!\",\"error\": 123}" :: BC.ByteString
+sampleError :: BC.ByteString
+sampleError = "{\"message\":\"oops!\",\"error\": 123}"
 
 -- We have to create a data type to match this JSON
 
@@ -25,6 +26,23 @@ data ErrorMessage = ErrorMessage
 instance FromJSON ErrorMessage where
   parseJSON (Object v) = ErrorMessage <$> v .: "message" <*> v .: "error"
 
+-- Refresher on applicatives:
+
+exampleMessage :: Maybe T.Text
+exampleMessage = Just "Opps"
+
+exampleError :: Maybe Int
+exampleError = Just 123
+
+exampleErrorMessage = ErrorMessage <$> exampleMessage <*> exampleError
+  -- Just (ErrorMessage {message = "Opps", error = 123})
+
+-- What is `.:`?
+
+{-
+(.:) :: FromJSON a => Object -> Text -> Parser a
+-}
+
 -- QC3
 
 data Name = Name
@@ -35,17 +53,22 @@ data Name = Name
 instance FromJSON Name where
   parseJSON (Object v) = Name <$> v .: "firstName" <*> v .: "lastName"
 
---
+-- Now we can decode:
 
-sampleErrorMessage = decode sampleError :: Maybe ErrorMessage
+sampleErrorMessage :: Maybe ErrorMessage
+sampleErrorMessage = decode sampleError
   -- Just (ErrorMessage {message = "oops!", error = 123})
+
+-- And encode:
 
 instance ToJSON ErrorMessage where
   toJSON (ErrorMessage message errorCode) =
     object ["message" .= message, "error" .= errorCode]
 
+{-
+encode anErrorMessage -- "{\"error\":0,\"message\":\"Everything is OK\"}"
+-}
 anErrorMessage = ErrorMessage "Everything is OK" 0
-  -- encode anErrorMessage == "{\"error\":0,\"message\":\"Everything is OK\"}"
 
 -- QC4
 

@@ -48,13 +48,13 @@ instance FromJSON NOAAResponse
 --
 
 printResults :: Maybe [NOAAResult] -> IO ()
-printResults Nothing        = BC.putStrLn "Error loading data."
+printResults Nothing        = print "Error loading data."
 printResults (Just results) = forM_ results $ \result -> print $ name result
 -- Code in the book is broken
 {-
 printResults (Just results) = do
   forM_ results (print . name)
-  print dataName
+    print dataName
 -}
 
 --
@@ -69,4 +69,4 @@ main = do
 
 -- Decode doesn't work - giving up
 
--- 2nd try - still doesn't work
+-- 2nd/3rd try - still doesn't work

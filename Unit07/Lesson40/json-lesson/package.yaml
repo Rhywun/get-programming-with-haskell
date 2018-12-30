@@ -35,6 +35,12 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - json-lesson
+    - aeson
+    - bytestring
+    - text
+    default-extensions:
+    - OverloadedStrings
+    - DeriveGeneric
 
 tests:
   json-lesson-test:

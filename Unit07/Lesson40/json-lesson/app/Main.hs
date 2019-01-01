@@ -12,17 +12,25 @@ data NOAAResult = NOAAResult
   , mindate      :: T.Text
   , maxdate      :: T.Text
   , name         :: T.Text
-  , datacoverage :: Int
+  , datacoverage :: Double -- was Int - bug in the book
   , resultId     :: T.Text -- "id"
   } deriving (Show)
 
 instance FromJSON NOAAResult where
-  parseJSON (Object v) = NOAAResult <$> v .: "uid"
-                                    <*> v .: "mindate"
-                                    <*> v .: "maxdate"
-                                    <*> v .: "name"
-                                    <*> v .: "datacoverage"
-                                    <*> v .: "id"
+  parseJSON (Object v) =
+    NOAAResult
+      <$> v
+      .:  "uid"
+      <*> v
+      .:  "mindate"
+      <*> v
+      .:  "maxdate"
+      <*> v
+      .:  "name"
+      <*> v
+      .:  "datacoverage"
+      <*> v
+      .:  "id"
 
 data Resultset = Resultset
   { offset :: Int
@@ -49,13 +57,8 @@ instance FromJSON NOAAResponse
 
 printResults :: Maybe [NOAAResult] -> IO ()
 printResults Nothing        = print "Error loading data."
-printResults (Just results) = forM_ results $ \result -> print $ name result
--- Code in the book is broken
-{-
-printResults (Just results) = do
-  forM_ results (print . name)
-    print dataName
--}
+-- Code in the book was broken
+printResults (Just results) = forM_ results (print . name)
 
 --
 
@@ -66,7 +69,45 @@ main = do
   let noaaResults  = results <$> noaaResponse
   printResults noaaResults
 
+--
+-- Summary
+--
 
--- Decode doesn't work - giving up
+-- Q1
 
--- 2nd/3rd try - still doesn't work
+instance ToJSON NOAAResult where
+  toJSON (NOAAResult uid mindate maxdate name datacoverage resultId) = object
+    [ "uid" .= uid
+    , "mindate" .= mindate
+    , "maxdate" .= maxdate
+    , "name" .= name
+    , "datacoverage" .= datacoverage
+    , "id" .= resultId
+    ]
+
+instance ToJSON Resultset
+
+instance ToJSON Metadata
+
+instance ToJSON NOAAResponse
+
+{-
+> jsonData <- B.readFile "data.json"
+> let noaaResponse = decode jsonData :: Maybe NOAAResponse
+> encode noaaResponse
+"{\"results\":[{\"uid\":\"gov.noaa.ncdc:C00861\",\"datacoverage\":1, ..."
+-}
+
+-- Q2
+
+data IntList = EmptyList | Cons Int (IntList) deriving (Show, Generic)
+
+intListExample :: IntList
+intListExample = Cons 1 $ Cons 2 EmptyList
+
+instance ToJSON IntList
+
+{-
+BC.putStrLn $ encode intListExample
+{"tag":"Cons","contents":[1,{"tag":"Cons","contents":[2,{"tag":"EmptyList"}]}]}
+-}

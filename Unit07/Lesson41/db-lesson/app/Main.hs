@@ -2,8 +2,13 @@ module Main where
 
 import           Control.Applicative
 import           Data.Time
+import           Data.Time.Calendar             ( dayOfWeek ) -- requires time-1.9.2
 import           Database.SQLite.Simple
 import           Database.SQLite.Simple.FromRow
+
+--
+-- Using SQLite and setting up your database
+--
 
 main = undefined :: IO ()
 
@@ -20,27 +25,29 @@ data Tool = Tool
   }
 
 instance Show Tool where
-  show tool =
-    mconcat
-      [ show $ toolId tool
-      , ".) "
-      , name tool
-      , "\n description: "
-      , description tool
-      , "\n last returned: "
-      , show $ lastReturned tool
-      , "\n times borrowed: "
-      , show $ timesBorrowed tool
-      , "\n"
-      ]
+  show tool = mconcat
+    [ show $ toolId tool
+    , ".) "
+    , name tool
+    , "\n description: "
+    , description tool
+    , "\n last returned: "
+    , show $ lastReturned tool
+    , "\n times borrowed: "
+    , show $ timesBorrowed tool
+    , "\n"
+    ]
 
--- Datetimes
+-- An aside: datetimes
 
 now :: IO UTCTime
-now = getCurrentTime
+now = getCurrentTime -- 2019-01-01 16:54:52.03222 UTC
 
 today :: IO Day
-today = utctDay <$> now
+today = utctDay <$> now -- 2019-01-01
+
+weekday :: IO DayOfWeek
+weekday = dayOfWeek <$> today -- Tuesday
 
 -- User table
 
@@ -52,7 +59,9 @@ data User = User
 instance Show User where
   show user = mconcat [show $ userId user, ".) ", userName user]
 
--- Create action
+--
+-- Creating data — inserting users and checking out tools
+--
 
 withConn :: String -> (Connection -> IO ()) -> IO ()
 withConn dbName action = do
@@ -62,7 +71,7 @@ withConn dbName action = do
 
 addUser :: String -> IO ()
 addUser userName = withConn db $ \conn -> do
-  execute conn "INSERT INTO users (username) VALUES (?)" (Only userName)
+  execute conn "INSERT INTO users (username) VALUES (?)" (Only userName) -- or [userName]
   putStrLn "User added."
 
 checkout :: Int -> Int -> IO ()
@@ -71,7 +80,9 @@ checkout userId toolId = withConn db $ \conn -> execute
   "INSERT INTO checkedout (user_id, tool_id) VALUES (?, ?)"
   (userId, toolId)
 
--- Read action
+--
+-- Reading data from the database and FromRow
+--
 
 -- We need to create instances of FromRow
 
@@ -81,10 +92,14 @@ instance FromRow User where
 instance FromRow Tool where
   fromRow = Tool <$> field <*> field <*> field <*> field <*> field
 
+--
+
 printUsers :: IO ()
 printUsers = withConn db $ \conn -> do
-  response <- query_ conn "SELECT * FROM users;" :: IO [User]
+  response <- query_ conn "SELECT * FROM users" :: IO [User]
   mapM_ print response
+
+--
 
 printToolQuery :: Query -> IO ()
 printToolQuery q = withConn db $ \conn -> do
@@ -92,26 +107,27 @@ printToolQuery q = withConn db $ \conn -> do
   mapM_ print response
 
 printTools :: IO ()
-printTools = printToolQuery "SELECT * FROM tools;"
+printTools = printToolQuery "SELECT * FROM tools"
 
-printAvailable :: IO ()
-printAvailable = printToolQuery $ mconcat
-  ["select * from tools ", "where id not in ", "(select tool_id from checkedout);"]
+printAvailableTools :: IO ()
+printAvailableTools =
+  printToolQuery "SELECT * FROM tools WHERE id NOT IN (SELECT tool_id FROM checkedout)"
 
-printCheckedout :: IO ()
-printCheckedout = printToolQuery $ mconcat
-  ["select * from tools ", "where id in ", "(select tool_id from checkedout);"]
+printCheckedoutTools :: IO ()
+printCheckedoutTools =
+  printToolQuery "SELECT * FROM tools WHERE id IN (SELECT tool_id FROM checkedout)"
 
--- Update action
-
-firstOrNothing :: [a] -> Maybe a
-firstOrNothing []      = Nothing
-firstOrNothing (x : _) = Just x
+--
+-- Updating existing data
+--
 
 selectTool :: Connection -> Int -> IO (Maybe Tool)
 selectTool conn toolId = do
   response <- query conn "SELECT * FROM tools WHERE id = (?)" (Only toolId) :: IO [Tool]
   return $ firstOrNothing response
+ where
+  firstOrNothing []      = Nothing
+  firstOrNothing (x : _) = Just x
 
 updateTool :: Tool -> Day -> Tool
 updateTool tool date =
@@ -120,12 +136,7 @@ updateTool tool date =
 updateOrWarn :: Maybe Tool -> IO ()
 updateOrWarn Nothing     = print "id not found"
 updateOrWarn (Just tool) = withConn db $ \conn -> do
-  let q = mconcat
-        [ "UPDATE TOOLS SET  "
-        , "lastReturned = ?,"
-        , " timesBorrowed = ? "
-        , "WHERE ID = ?;"
-        ]
+  let q = "UPDATE TOOLS SET lastReturned = ?, timesBorrowed = ? WHERE id = ?"
   execute conn q (lastReturned tool, timesBorrowed tool, toolId tool)
   print "tool updated"
 
@@ -135,3 +146,5 @@ updateToolTable toolId = withConn db $ \conn -> do
   currentDay <- utctDay <$> getCurrentTime
   let updatedTool = updateTool <$> tool <*> pure currentDay
   updateOrWarn updatedTool
+
+-- snip --

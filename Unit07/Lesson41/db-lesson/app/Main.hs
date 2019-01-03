@@ -5,12 +5,13 @@ import           Data.Time
 import           Data.Time.Calendar             ( dayOfWeek ) -- requires time-1.9.2
 import           Database.SQLite.Simple
 import           Database.SQLite.Simple.FromRow
+import           System.IO -- for the buffering stuff
 
 --
 -- Using SQLite and setting up your database
 --
 
-main = undefined :: IO ()
+-- main = undefined :: IO ()         This will be completed at the end
 
 db = "tools.db" :: String
 
@@ -20,7 +21,7 @@ data Tool = Tool
   { toolId        :: Int
   , name          :: String
   , description   :: String
-  , lastReturned  :: Day
+  , lastReturned  :: Maybe Day
   , timesBorrowed :: Int
   }
 
@@ -35,7 +36,6 @@ instance Show Tool where
     , show $ lastReturned tool
     , "\n times borrowed: "
     , show $ timesBorrowed tool
-    , "\n"
     ]
 
 -- An aside: datetimes
@@ -121,9 +121,14 @@ printCheckedoutTools =
 -- Updating existing data
 --
 
+{-
+> conn <- open db
+> selectTool conn 1
+Just 1.) hammer ...
+-}
 selectTool :: Connection -> Int -> IO (Maybe Tool)
 selectTool conn toolId = do
-  response <- query conn "SELECT * FROM tools WHERE id = (?)" (Only toolId) :: IO [Tool]
+  response <- query conn "SELECT * FROM tools WHERE id = ?" (Only toolId) :: IO [Tool]
   return $ firstOrNothing response
  where
   firstOrNothing []      = Nothing
@@ -131,12 +136,12 @@ selectTool conn toolId = do
 
 updateTool :: Tool -> Day -> Tool
 updateTool tool date =
-  tool { lastReturned = date, timesBorrowed = 1 + timesBorrowed tool }
+  tool { lastReturned = Just date, timesBorrowed = 1 + timesBorrowed tool }
 
 updateOrWarn :: Maybe Tool -> IO ()
 updateOrWarn Nothing     = print "id not found"
 updateOrWarn (Just tool) = withConn db $ \conn -> do
-  let q = "UPDATE TOOLS SET lastReturned = ?, timesBorrowed = ? WHERE id = ?"
+  let q = "UPDATE tools SET lastReturned = ?, timesBorrowed = ? WHERE id = ?"
   execute conn q (lastReturned tool, timesBorrowed tool, toolId tool)
   print "tool updated"
 
@@ -147,4 +152,95 @@ updateToolTable toolId = withConn db $ \conn -> do
   let updatedTool = updateTool <$> tool <*> pure currentDay
   updateOrWarn updatedTool
 
--- snip --
+--
+-- Deleting data from your database
+--
+
+checkin :: Int -> IO ()
+checkin toolId = withConn "tools.db"
+  $ \conn -> execute conn "DELETE FROM checkedout WHERE tool_id = ?;" (Only toolId)
+
+checkinAndUpdate :: Int -> IO ()
+checkinAndUpdate toolId = do
+  checkin toolId
+  updateToolTable toolId
+
+--
+-- Putting it all together
+--
+
+promptAndAddUser :: IO ()
+promptAndAddUser = do
+  dontBuffer
+  putStr "User name? "
+  userName <- getLine
+  addUser userName
+
+promptAndAddTool :: IO ()
+promptAndAddTool = do
+  dontBuffer
+  putStr "Tool name? "
+  name <- getLine
+  putStr "Tool description? "
+  description <- getLine
+  addTool name description
+
+promptAndCheckout :: IO ()
+promptAndCheckout = do
+  dontBuffer
+  putStr "User ID? "
+  userId <- pure read <*> getLine
+  putStr "Tool ID? "
+  toolId <- pure read <*> getLine
+  checkout userId toolId
+
+promptAndCheckin :: IO ()
+promptAndCheckin = do
+  dontBuffer
+  putStr "Tool ID? "
+  toolId <- pure read <*> getLine
+  checkinAndUpdate toolId
+
+performCommand :: String -> IO ()
+performCommand command | command == "users"    = printUsers >> main
+                       | command == "tools"    = printTools >> main
+                       | command == "adduser"  = promptAndAddUser >> main
+                       | command == "addtool"  = promptAndAddTool >> main
+                       | command == "checkout" = promptAndCheckout >> main
+                       | command == "checkin"  = promptAndCheckin >> main
+                       | command == "in"       = printAvailableTools >> main
+                       | command == "out"      = printCheckedoutTools >> main
+                       | command == "quit"     = putStrLn "Bye!"
+                       | otherwise = putStrLn "Error: command not found" >> main
+
+--
+
+dontBuffer :: IO ()
+dontBuffer = hSetBuffering stdin NoBuffering
+
+main :: IO ()
+main = do
+  dontBuffer
+  putStr "Command? "
+  command <- getLine
+  performCommand command
+
+--
+-- Summary
+--
+
+-- Q1
+
+addTool :: String -> String -> IO ()
+addTool name description = withConn db $ \conn -> do
+  execute conn
+          "INSERT INTO tools (name, description, timesBorrowed) VALUES (?, ?, ?)"
+          (name, description, 0 :: Int)
+  putStrLn "Tool added."
+
+-- `printTools` now fails because `lastReturned` is null:
+-- *** Exception: ConversionFailed {errSQLType = "NULL", errHaskellType = "Day",
+--   errMessage = "expecting SQLText column type"}
+
+-- Q2
+-- see `promptAndAddTool` and `performCommand` above

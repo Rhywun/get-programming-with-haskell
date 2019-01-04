@@ -37,26 +37,41 @@ oneIndexArray = array (1, 5) $ zip [1 .. 5] $ repeat True
   -- array (1,5) [(1,True),(2,True),(3,True),(4,True),(5,True)]
 
 -- QC1
+-- The question is confusing but here goes:
+
 qc1 :: UArray Int Bool
-qc1 = array (0, 4) [(1, True), (2, True)]
-  -- array (0,4) [(0,False),(1,True),(2,True),(3,False),(4,False)]
+qc1 = array (0, 4) [(2, True), (3, True)]
+  -- array (0,4) [(0,False),(1,False),(2,True),(3,True),(4,False)]
+
+-- Arrays can use any Bounded Enum index:
+
+a1 :: UArray Char Int
+a1 = array ('a', 'z') $ zip ['a' .. 'z'] [1 .. 26] -- array ('a','z') [('a',1),('b',2),...]
+
+-- Updating your UArray...
 
 beansInBuckets :: UArray Int Int
 beansInBuckets = array (0, 3) [] -- array (0,3) [(0,0),(1,0),(2,0),(3,0)]
 
 -- QC2
+
 qc2 :: UArray Int Int
 qc2 = array (0, 3) $ zip [0 .. 3] $ repeat 0 -- array (0,3) [(0,0),(1,0),(2,0),(3,0)]
 
-beansInBuckets' :: UArray Int Int
-beansInBuckets' = beansInBuckets // [(1, 5), (3, 6)] -- array (0,3) [(0,0),(1,5),(2,0),(3,6)]
+-- ...with the `//` operator:
 
--- Add two beans to every bucket
+beansInBuckets' :: UArray Int Int
+beansInBuckets' = beansInBuckets // [(1, 5), (3, 6)]
+  -- array (0,3) [(0,0),(1,5),(2,0),(3,6)]
+
+-- ... now add two beans to every bucket:
+
 beansInBuckets'' :: UArray Int Int
 beansInBuckets'' = accum (+) beansInBuckets' $ zip [0 .. 3] $ repeat 2
   -- array (0,3) [(0,2),(1,7),(2,2),(3,8)]
 
 -- QC3
+
 qc3 :: UArray Int Int
 qc3 = accum (*) beansInBuckets'' $ zip [0 .. 3] $ repeat 2
   -- array (0,3) [(0,4),(1,14),(2,4),(3,16)]
@@ -85,7 +100,8 @@ listToUArray [1,2,3] -- array (0,2) [(0,1),(1,2),(2,3)]
 listToUArray :: [Int] -> UArray Int Int
 listToUArray vals = runSTUArray $ listToSTUArray vals
 
--- Or, more typically, you would combine the two functions:
+-- Or, more typically, you would combine two functions such as `listToSTUArray`
+-- and `listToUArray` like so:
 
 {-
 listToUArray' [1,2,3] -- array (0,2) [(0,1),(1,2),(2,3)]
@@ -140,3 +156,5 @@ bubbleSort myArray = runSTUArray $ do
       writeArray stArray j       nextVal
       writeArray stArray (j + 1) val
   return stArray
+
+-- snip --

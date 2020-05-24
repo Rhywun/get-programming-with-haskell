@@ -36,9 +36,9 @@ type Title = String
 type Year = Int
 type Price = Double
 
-newtype AuthorName' = FirstName LastName
+data AuthorName' = AuthorName' FirstName LastName
 
-data Book'' = AuthorName' ISBN Title Year Price
+data Book'' = Book'' AuthorName' ISBN Title Year Price
 
 -- Or, using record sytax:
 

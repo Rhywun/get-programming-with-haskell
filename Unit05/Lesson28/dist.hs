@@ -1,18 +1,20 @@
-import qualified Data.Map                      as Map
+import qualified Data.Map as Map
+
+-- * A command-line application for calculating the distance between cities
 
 type LatLong = (Double, Double)
 
--- The database
-
+-- | The database
 locationDB :: Map.Map String LatLong
-locationDB = Map.fromList
-  [ ("Arkham"   , (42.6054, -70.7829))
-  , ("Innsmouth", (42.8250, -70.8150))
-  , ("Carcosa"  , (29.9714, -90.7694))
-  , ("New York" , (40.7776, -73.9691))
-  ]
+locationDB =
+  Map.fromList
+    [ ("Arkham", (42.6054, -70.7829)),
+      ("Innsmouth", (42.8250, -70.8150)),
+      ("Carcosa", (29.9714, -90.7694)),
+      ("New York", (40.7776, -73.9691))
+    ]
 
--- Calculating the distance
+-- * Computing the distance between two points with haversine
 
 toRadians :: Double -> Double
 toRadians degrees = degrees * pi / 180
@@ -20,37 +22,36 @@ toRadians degrees = degrees * pi / 180
 latLongToRads :: LatLong -> (Double, Double)
 latLongToRads (lat, long) = (toRadians lat, toRadians long)
 
--- Calculate the distance between two LatLongs
-{-
-haversine (40.7776,-73.9691) (42.6054,-70.7829) -- 207.3909006336738
--}
+-- | Calculates the distance between two LatLongs on a sphere.
+-- >>> haversine (40.7776,-73.9691) (42.6054,-70.7829)
+-- 207.3909006336738
 haversine :: LatLong -> LatLong -> Double
 haversine coords1 coords2 = earthRadius * c
- where
-  (rlat1, rlong1) = latLongToRads coords1
-  (rlat2, rlong2) = latLongToRads coords2
-  dlat            = rlat2 - rlat1
-  dlong           = rlong2 - rlong1
-  a = sin (dlat / 2) ^ (2 :: Int) + cos rlat1 * cos rlat2 * sin (dlong / 2) ^ (2 :: Int)
-  c               = 2 * atan2 (sqrt a) (sqrt (1 - a))
-  earthRadius     = 3961.0
+  where
+    (rlat1, rlong1) = latLongToRads coords1
+    (rlat2, rlong2) = latLongToRads coords2
+    dlat = rlat2 - rlat1
+    dlong = rlong2 - rlong1
+    a = sin (dlat / 2) ^ (2 :: Int) + cos rlat1 * cos rlat2 * sin (dlong / 2) ^ (2 :: Int)
+    c = 2 * atan2 (sqrt a) (sqrt (1 - a))
+    earthRadius = 3961.0
 
--- Print the (potentially missing) distance
+-- | Prints a (potentially missing) distance.
 printDistance :: Maybe Double -> IO ()
-printDistance Nothing         = putStrLn "City not found."
+printDistance Nothing = putStrLn "City not found."
 printDistance (Just distance) = putStrLn (show distance ++ " miles")
 
--- We don't want to have to do this:
+-- We don't want to have to create a wrapper specialized for a single type:
 haversineMaybe :: Maybe LatLong -> Maybe LatLong -> Maybe Double
-haversineMaybe Nothing     _           = Nothing
-haversineMaybe _           Nothing     = Nothing
+haversineMaybe Nothing _ = Nothing
+haversineMaybe _ Nothing = Nothing
 haversineMaybe (Just val1) (Just val2) = Just (haversine val1 val2)
 
 -- QC1
 
 addMaybe :: Maybe Int -> Maybe Int -> Maybe Int
 addMaybe (Just x) (Just y) = Just (x + y)
-addMaybe _        _        = Nothing
+addMaybe _ _ = Nothing
 
 -- QC2
 
@@ -111,6 +112,7 @@ dist :: Maybe Double
 --     partial application
 --     vvvvvvvvvvvvvvvvvvv
 dist = haversine <$> start <*> dest
+
 --                   ^^^^^^^^^^^^^^
 --             allows completion in context
 
@@ -124,7 +126,7 @@ main = do
   putStr "Destination city? "
   destCity <- getLine
   let destLatLong = Map.lookup destCity locationDB
-  let distance    = haversine <$> startLatLong <*> destLatLong
+  let distance = haversine <$> startLatLong <*> destLatLong
   printDistance distance
 
 -- Q1
